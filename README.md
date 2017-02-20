@@ -43,8 +43,9 @@ If using Windows, I __highly__ recommend using the Ubuntu Subsystem that provide
   1. In your favorite terminal, navigate into the newly cloned iditarod directory
   2. Run `npm install`. This should download a bunch of packages in the node_modules folder. __Make sure this exists__
   
-5. Rejoice, for you are now ready to spend countless hours trying to figure out how everything works! __Enjoy__
-    From this point on, there should not be any platform disparities as far as development goes. Good luck.
+5. Rejoice, for you are now ready to spend countless hours trying to figure out how everything works! __Enjoy__ 
+
+From this point on, there should not be any platform disparities as far as development goes.
 
 ### Server Testing
 All of these steps should be completed in the root of the `iditarod` directory
