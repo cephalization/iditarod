@@ -16,6 +16,7 @@
 
 .App-intro {
   font-size: large;
+  padding: 40px;
 }
 
 @keyframes App-logo-spin {

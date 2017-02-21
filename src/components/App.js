@@ -10,7 +10,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to Iditarod!</h2>
         </div>
-		<div className="app-intro">
+		<div className="App-intro">
 			<a className="waves-effect waves-light btn" href="#">Login!</a>
 		</div>
       </div>
