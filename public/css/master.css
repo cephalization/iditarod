@@ -1,0 +1,14 @@
+html {
+	min-height: 100vh;
+	min-width: 100vw;
+}
+
+body {
+	min-height: 100vh;
+	min-width: 100vw;
+}
+
+div {
+	width: inherit;
+	height: inherit;
+}
