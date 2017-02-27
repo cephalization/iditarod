@@ -12,12 +12,6 @@ firebase.initializeApp({
 });
 const database = firebase.database();
 
-// Get all courses
-let courses = database.ref('Courses');
-courses.on('value', function(snapshot) {
-	console.log(snapshot.val());
-});
-
 // Configure express to listen on localhost, deliver the latest React Build
 app.use(express.static('./build'));
 
@@ -28,3 +22,12 @@ app.get('/', function (req, res) {
 
 app.listen(9000);
 
+// Endpoints for client retrieval of data
+app.get('/courses/allCourses', function(req, res) {
+	
+	// Get all courses
+	let courses = database.ref('Courses');
+	courses.on('value', function(snapshot) {
+		res.courses= snapshot.val();
+	});
+});
