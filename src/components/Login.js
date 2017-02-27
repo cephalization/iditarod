@@ -13,6 +13,7 @@ class Login extends Component {
 			<div className='valign-wrapper'>
 				<a className='center-object valign btn-large waves-effect waves-light' 
 				   onClick={(e) => {e.preventDefault(); this.context.router.transitionTo(`/dashboard`)}}>Login</a>			
+		<div className="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 			</div>
 			</div>
 		</div>
