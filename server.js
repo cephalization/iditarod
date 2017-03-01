@@ -28,6 +28,6 @@ app.get('/courses/allCourses', function(req, res) {
 	// Get all courses
 	let courses = database.ref('Courses');
 	courses.on('value', function(snapshot) {
-		res.courses= snapshot.val();
+		res.courses = snapshot.val();
 	});
 });
