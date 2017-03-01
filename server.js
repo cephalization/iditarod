@@ -3,12 +3,13 @@ const path = require('path');
 const app = express();
 const firebase = require('firebase-admin');
 
-// Configure Firebase connection information
-// Initialize Firebase
+// Configure Firebase connection information Initialize Firebase
 const serviceAccount = require('./firebase-credentials.json');
 firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-  databaseURL: "https://iditarod-b06d6.firebaseio.com"
+	credential: firebase
+		.credential
+		.cert(serviceAccount),
+	databaseURL: 'https://iditarod-b06d6.firebaseio.com'
 });
 const database = firebase.database();
 
@@ -16,18 +17,18 @@ const database = firebase.database();
 app.use(express.static('./build'));
 
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, './build', 'index.html'));
-    console.log('We sent the site!');
+	res.sendFile(path.join(__dirname, './build', 'index.html'));
+	console.log('We sent the site!');
 });
 
 // Endpoints for client retrieval of data
-app.get('/courses/allCourses', function(req, res) {
-	console.log("Request sent for course data...");
+app.get('/courses/allCourses', function (req, res) {
+	console.log('Request sent for course data...');
 	// Get all courses
-        let courses = database.ref('Courses');
-	courses.on('value', function(snapshot) {
-	    res.json(snapshot.val());
-            console.log("Sent data!");
+	let courses = database.ref('Courses');
+	courses.on('value', function (snapshot) {
+		res.json(snapshot.val());
+		console.log('Sent data!');
 	});
 });
 
