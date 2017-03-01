@@ -20,14 +20,15 @@ app.get('/', function (req, res) {
     console.log('We sent the site!');
 });
 
-app.listen(9000);
-
 // Endpoints for client retrieval of data
 app.get('/courses/allCourses', function(req, res) {
-	
+	console.log("Request sent for course data...");
 	// Get all courses
-	let courses = database.ref('Courses');
+        let courses = database.ref('Courses');
 	courses.on('value', function(snapshot) {
-		res.courses = snapshot.val();
+	    res.json(snapshot.val());
+            console.log("Sent data!");
 	});
 });
+
+app.listen(9000);
