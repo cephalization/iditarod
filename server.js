@@ -27,7 +27,9 @@ app.get('/courses/allCourses', function (req, res) {
 	// Get all courses
 	let courses = database.ref('Courses');
 	courses.on('value', function (snapshot) {
-		res.json(snapshot.val());
+		res.send({
+			'courses': snapshot.val()
+		});
 		console.log('Sent data!');
 	});
 });

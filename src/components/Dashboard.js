@@ -11,34 +11,46 @@ class Dashboard extends Component {
 			.bind(this);
 		//Set up our state
 		this.state = {
-			courseJSON: ''
+			courses: []
 		};
-		//Async call to retreive courses
+		//Async call to retrieve courses
 		this.retrieveCourses();
 	}
 
 	retrieveCourses() {
-		fetch('/courses/allCourses')
+		// Make modifications to an object referring the class's 'this'
+		let coursesRef = this;
+
+		// Fetch the data, convert response to json, assign json object to 'courses'
+		fetch('/courses/allCourses').then((response) => response.json())
 			.then(function (response) {
 				console.log(response);
-				return response.text();
+				let courses = [];
+				for (let course in response.courses) {
+					console.log('course is', course);
+					courses.push(
+						// This code needs to be abstracted into a class Component
+						// Talk to Tony about how to pass props, etc
+						<li>
+							{ course + ' - ' + response.courses[course].name }
+						</li>
+					);
+				}
+				coursesRef.setState({courses: courses});
 			})
-			.then(function (responseJSON) {
-				console.log(responseJSON);
-				this.setState({courseJSON: responseJSON});
-			}.bind(this))
 			.catch(function (error) {
 				console.log(error);
 			});
 	}
 
 	render() {
+
 		return (
 			<div>
-				Dashboard Component!
-				<p>
-					{this.state.courseJSON}
-				</p>
+				<h1>Dashboard Component!</h1>
+				<ul>
+					{this.state.courses}
+				</ul>
 			</div>
 		);
 	}
