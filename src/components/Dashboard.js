@@ -31,7 +31,7 @@ class Dashboard extends Component {
 					courses.push(
 						// This code needs to be abstracted into a class Component
 						// Talk to Tony about how to pass props, etc
-						<li>
+						<li key={course}>
 							{ course + ' - ' + response.courses[course].name }
 						</li>
 					);
