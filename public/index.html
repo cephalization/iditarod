@@ -26,6 +26,8 @@
 	<script type="text/javascript">
     // [START googlecallback]
     function onSignIn(googleUser) {
+      //Make sure its an mtu email address
+      if(googleUser.w3.U3.endsWith('@mtu.edu')){
       console.log('Google Auth Response', googleUser);
       // We need to register an Observer on Firebase Auth to make sure auth is initialized.
       var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
@@ -39,7 +41,20 @@
           // [END googlecredential]
           // Sign in with credential from the Google user.
           // [START authwithcred]
-          firebase.auth().signInWithCredential(credential).catch(function(error) {
+          firebase.auth().signInWithCredential(credential).then(function(val){
+            //send token to server
+            firebase.auth().currentUser.getToken(true).then(function(token){
+                let xhttp = new XMLHttpRequest();
+                xhttp.open('POST', '/signIn', true);
+                xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhttp.send('token='+token);
+                xhttp.onloadend = function(){
+                    //Do something here when finished!
+                    console.log(xhttp.responseText);
+                }
+            });
+          }, 
+          function(error) {
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
@@ -62,6 +77,9 @@
           console.log('User already signed-in Firebase.');
         }
       });
+        }else{
+            console.log('not an MTU email');
+        }
     }
     // [END googlecallback]
     /**
