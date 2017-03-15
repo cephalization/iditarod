@@ -39,13 +39,13 @@ function onSignIn(googleUser) {
   console.log('Image URL: ' + profile.getImageUrl());
   console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 }
-<a href="#" onclick="signOut();">Sign out</a>
+/*<a href="#" onclick="signOut();">Sign out</a>
  window.onLoadCallback = function signOut(googleUser) {
-    var auth2 = googleUser.auth2.getAuthInstance();
+    //var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
       console.log('User signed out.');
     });
-  }
+  }*/
 
 Login.contextTypes = {
     router: React.PropTypes.object
