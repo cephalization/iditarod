@@ -12,21 +12,22 @@ class Login extends Component {
 		</div>
 		<div className='content-section'>
 		<div className='valign-wrapper'>
-		<p id='quickstart-sign-in-status'>Status</p>
+		
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
 		<a
-		className="g-signin2" data-onsuccess="onSignIn"
+		className="g-signin2" data-onSuccess= "onSignIn()"
 		onClick={(e) => {
 			e.preventDefault();
-			e.onSignIn();
+			onSignIn();
 			this
 			.context
 			.router
 			.transitionTo('/dashboard');
 		    }}></a>
-				<script src="https://apis.google.com/js/platform.js" async defer></script>
-		<a href="#" onclick="signOut();">Sign Out</a>
+		<a href="#" onClick="signOut()">Sign Out</a>
 		</div>
 		</div>
+		<p id='quickstart-sign-in-status'>status</p>
 		</div>
 		);
     }
@@ -39,7 +40,7 @@ function onSignIn(googleUser) {
   console.log('Image URL: ' + profile.getImageUrl());
   console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 }
-/*<a href="#" onclick="signOut();">Sign out</a>
+/*
  window.onLoadCallback = function signOut(googleUser) {
     //var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
