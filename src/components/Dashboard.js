@@ -32,7 +32,7 @@ class Dashboard extends Component {
 					courses.push(
 						// This code needs to be abstracted into a class Component Talk to Tony about
 						// how to pass props, etc
-						<li key = {course}> { course + ' - ' + response.courses[course].name}</li>
+						<li key={course}> { course + ' - ' + response.courses[course].name}</li>
 					);
 				}
 			}
@@ -49,9 +49,11 @@ class Dashboard extends Component {
 
 		return (
 			<div>
-				<h1> Dashboard Component! </h1 > <ul>
+				<h1> Dashboard Component! </h1>
+				<ul>
 					{this.state.courses}
-				</ul> < /div>);
+				</ul>
+			</div>);
 	}
 }
 
