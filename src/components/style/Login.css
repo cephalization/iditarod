@@ -1,4 +1,10 @@
 .intro {
-	height: 300px;
+	height: 320px;
 	padding: 20px;
+	text-align: center;
+}
+
+.intro h1 {
+	font-size: 140px;
+	font-weight: bold;
 }

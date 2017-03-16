@@ -1,7 +1,7 @@
 // Import libraries
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Match, Miss} from 'react-router'
+import { BrowserRouter, Match, Miss} from 'react-router';
 
 // Import components
 import Login from './components/Login';
@@ -30,7 +30,7 @@ const RootComponent = () => {
 			</div>
 		</BrowserRouter>
 	);
-}
+};
 
 ReactDOM.render(
   <RootComponent />,
