@@ -24,6 +24,7 @@ app.use(bodyParser.urlencoded({
 // Intercept all URLs, switch on URL
 app.get('*', function (req, res) {
 	// Create endpoints as functions and call them based on the url
+	console.log('Get request caught for', req.path);
 	switch (req.path) {
 	case '/courses/allCourses':
 		getAllCourses(req, res);
@@ -44,6 +45,7 @@ app.get('*', function (req, res) {
  * to see how to generate this token.
  */
 app.post('*', function(req, res){
+	console.log('Post request caught for', req.path);
 	switch(req.path){
 	case '/signIn':
 		signIn(req, res);
