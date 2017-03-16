@@ -13,9 +13,9 @@ class Login extends Component {
 		<div className='content-section'>
 		<div className='valign-wrapper'>
 		
-		<script src="https://apis.google.com/js/platform.js" async defer></script>
+		<script src='https://apis.google.com/js/platform.js' async defer></script>
 		<a
-		className="g-signin2" data-onSuccess= "onSignIn()"
+		className='g-signin2' data-onSuccess='onSignIn()'
 		onClick={(e) => {
 			e.preventDefault();
 			onSignIn();
@@ -24,10 +24,10 @@ class Login extends Component {
 			.router
 			.transitionTo('/dashboard');
 		    }}></a>
-		<a href="#" onClick="signOut()">Sign Out</a>
 		</div>
+		<a href='#' onClick='signOut();'>Sign Out</a>
+		<p id='quickstart-sign-in-status'>Status</p>
 		</div>
-		<p id='quickstart-sign-in-status'>status</p>
 		</div>
 		);
     }
@@ -40,9 +40,9 @@ function onSignIn(googleUser) {
   console.log('Image URL: ' + profile.getImageUrl());
   console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 }
-/*
+ /*//Code for the sign out function. Will work once gapi is figured out
  window.onLoadCallback = function signOut(googleUser) {
-    //var auth2 = gapi.auth2.getAuthInstance();
+    var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
       console.log('User signed out.');
     });
