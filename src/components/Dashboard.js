@@ -26,8 +26,9 @@ class Dashboard extends Component {
 		.then(function (response) {
 			console.log(response);
 			let courses = [];
-			if (response.courses) {
-				for (let course in response.courses) {
+
+			for (let course in response.courses) {
+				if (response.courses.hasOwnProperty(course)) {
 					console.log('course is', course);
 					courses.push(
 						// This code needs to be abstracted into a class Component Talk to Tony about
