@@ -63,7 +63,7 @@ let getAllCourses = function (req, res) {
 
 	// Get all courses from firebase
 	let courses = database.ref('Courses');
-	courses.on('value', function (snapshot) {
+	courses.once('value', function (snapshot) {
 		res.send({
 			'courses': snapshot.val()
 		});

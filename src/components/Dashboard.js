@@ -50,10 +50,11 @@ class Dashboard extends Component {
 
 		return (
 			<div>
-				<h1> Dashboard Component! </h1>
-				<ul>
-					{this.state.courses}
-				</ul>
+				<div className="container">
+					<ul>
+						{this.state.courses}
+					</ul>
+				</div>
 			</div>);
 	}
 }

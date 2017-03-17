@@ -4,7 +4,9 @@ class Course extends Component {
 	render() {
 		return (
 			<div>
-				Courses Component!
+				<div className="container">
+					<h3>Courses Component!</h3>
+				</div>
 			</div>
 		);
 	}

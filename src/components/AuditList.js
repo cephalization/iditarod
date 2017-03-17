@@ -4,7 +4,9 @@ class AuditList extends Component {
 	render() {
 		return (
 			<div>
-				AuditList Component!
+				<div>
+						<h3>AuditList Component!</h3>
+				</div>
 			</div>
 		);
 	}
