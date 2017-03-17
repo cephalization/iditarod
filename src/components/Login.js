@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import './style/Login.css';
 import GoogleLogin from 'react-google-login';
 //import GoogleAuth from 'vue-google-auth';
+import './style/Login.css';
 
 class Login extends Component {
 	constructor() {
@@ -12,6 +12,9 @@ class Login extends Component {
 	responseGoogle(response) {
 		// Successful response from google
 		if (response.googleId) {
+			// TODO: Authenticate with firebase
+			// TODO: Send google and firebase authentication info to node to create a cookie
+			// Route the logged in user to their dashboard
 			this.context.router.transitionTo('/dashboard');
 		}
 	}
