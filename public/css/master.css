@@ -7,17 +7,12 @@
 /*
 	Element Defaults
 */
-html {
-	min-height: 100vh;
-	min-width: 100vw;
-	max-width: 100vw;
-}
-
 body {
-	min-height: 100vh;
-	min-width: 100vw;
 	font-family: 'Roboto', Arial, Helvetica, sans-serif;
 	background-color: #F2F2F2;
+	margin-top: 64px;
+	max-width: 100vw;
+	min-width: 350px;
 }
 
 div {
@@ -53,8 +48,12 @@ h2 {
 	background-color: #FFCD00;
 }
 
-.mtu-yellow-text {
-	color: #FFCD00;
+.brand-logo img {
+	height: 25px;
+}
+
+.mtu-yellow-text * {
+	color: #FFCD00 !important;
 }
 
 .jet-black-bg {

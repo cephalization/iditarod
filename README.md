@@ -47,17 +47,23 @@ If using Windows, I __highly__ recommend using the Ubuntu Subsystem that provide
 
 From this point on, there should not be any platform disparities as far as development goes.
 
-### Server Testing
+### Application Debugging
 All of these steps should be completed in the root of the `iditarod` directory
 
-1. Build the latest version of the react front-end by running `npm run build`
-2. Launch the server with `node server.js`
-3. Connect to http://localhost:9000/ in your favorite browser
+1. cd to the iditarod root directory and run `npm install`.
+2. launch the DataAccessLayer server with `node server.js`.
+3. In another terminal instance/tab, run `npm start`. This will open a browser with the front-end loaded. It will refresh whenever changes are saved to any react related file.
+4. Connect to http://localhost:3000/ in your favorite browser if it is not open already
+
+Make sure both commands are running separately in order to have full site functionality.
 
 Whenever you make a change to the `server.js` file, you only need to re-launch the server with node for changes to appear.
-If changes are made to any react files you need to complete a new build.
+If changes are made to any react files, the site will automatically refresh.
 
-### Front-end Testing
-Testing the front-end can be done with the process above but here are alternate steps if you don't need any of the functionality in `server.js`. This testing process will be much faster.
+### Application Testing
+To test a production-optimized version of the application, run the following commands.
+1. cd to the iditarod root directory and run 'npm run build'.
+2. launch the DataAccessLayer server with 'node server.js'
+3. Connect to http://localhost:9000/ in your favorite browser
 
-1. Run `npm start`. This will open a browser with the front-end loaded. It will refresh whenever changes are saved to any react related file.
+Running the application in this way is easier but the build takes a while to complete. Use the __Application Debugging__ steps above while developing.

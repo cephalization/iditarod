@@ -11,13 +11,13 @@
 
 process.on('unhandledRejection', console.log.bind(console));
 
-console.log("starting");
+console.log('starting');
 
 let https = require('https');
 const cheerio = require('cheerio');
 
 https.get('https://www.banweb.mtu.edu/pls/owa/stu_ctg_utils.p_online_all_courses_ug', (res) => {
-	console.log("readingData");
+	console.log('readingData');
 	let rawData = '';
 	res.on('data', (chunk) => rawData += chunk);
 	res.on('end', () => parseData(rawData));
