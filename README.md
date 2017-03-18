@@ -62,8 +62,9 @@ If changes are made to any react files, the site will automatically refresh.
 
 ### Application Testing
 To test a production-optimized version of the application, run the following commands.
-1. cd to the iditarod root directory and run 'npm run build'.
-2. launch the DataAccessLayer server with 'node server.js'
-3. Connect to http://localhost:9000/ in your favorite browser
+1. cd to the iditarod root directory and run 'npm install'.
+2. build the latest front-end with `npm run build`
+3. launch the DataAccessLayer server with 'node server.js'
+4. Connect to http://localhost:9000/ in your favorite browser
 
 Running the application in this way is easier but the build takes a while to complete. Use the __Application Debugging__ steps above while developing.
