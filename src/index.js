@@ -2,8 +2,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Match, Miss} from 'react-router';
-// import $ from 'materialize-css/bin/jquery-2.1.1.min.js';
-// import 'materialize-css/bin/materialize.js';
+import cookie from 'react-cookie';
+import * as FirebaseActions from './firebaseFunctions';
 
 // Import components
 import NavBar from './components/NavBar';
@@ -15,31 +15,76 @@ import AuditList from './components/AuditList';
 import Audit from './components/Audit';
 import NotFound from './components/NotFound';
 
-
 // Import Stylesheet
 import './index.css';
 import 'materialize-css/bin/materialize.css';
 
-// window.$ = $;
+class RootComponent extends React.Component {
+	constructor() {
+		super();
+		this.checkAuthentication = this.checkAuthentication.bind(this);
+		this.state = {
+			signedIn : false
+		};
+	}
 
-const RootComponent = () => {
-	return (
-		<div>
-			<NavBar />
-			<BrowserRouter>
-				<div>
-					<Match exactly pattern="/" component={Login} />
-					<Match exactly pattern="/dashboard" component={Dashboard} />
-					<Match exactly pattern="/courses" component={Courses} />
-					<Match exactly pattern="/new/audit" component={CreateAudit} />
-					<Match exactly pattern="/stored/audit" component={AuditList} />
-					<Match exactly pattern="/audit/:AuditID" component={Audit} />
-					<Miss component={NotFound} />
-				</div>
-			</BrowserRouter>
-		</div>
-	);
-};
+	checkAuthentication(location) {
+		//if we're not signed in, then we need to re-auth, or redirect to the login page.
+		console.log('checkAuthentication triggered from', location);
+		if(FirebaseActions.getCurrentUser() === null){
+			console.log('firebase user authentication does not exist');
+			let googCook = cookie.load('TOKEN', true);
+			if(googCook) {
+				console.log('google token exists, refreshing firebase token');
+				FirebaseActions.signInUser(googCook);
+				if (!this.state.signedIn) {
+					this.setState({signedIn:true});
+				}
+				return true;
+			}else{
+				console.log('google token does not exist, user must log in again');
+				if (this.setState.signedIn) {
+					this.setState({signedIn:false});
+				}
+				console.log('Location is', window.location);
+				if (window.location.pathname !== '/') {
+					console.log('reroute required');
+					window.location.href = '/';
+				}
+				return false;
+			}
+		} else {
+			if (!this.state.signedIn) {
+				this.setState({signedIn:true});
+			}
+			return true;
+		}
+	}
+
+	// componentWillMount() {
+	// 	this.checkAuthentication('NavBar');
+	// }
+
+	render () {
+		console.log(Match);
+		return (
+			<div>
+				<NavBar signedIn={this.state.signedIn} />
+				<BrowserRouter>
+					<div>
+						<Match exactly pattern="/" render={() => <Login checkAuth={this.checkAuthentication} />} />
+						<Match exactly pattern="/dashboard" render={() => <Dashboard checkAuth={this.checkAuthentication} />} />
+						<Match exactly pattern="/courses" render={() => <Courses checkAuth={this.checkAuthentication} />} />
+						<Match exactly pattern="/new/audit" render={() => <CreateAudit checkAuth={this.checkAuthentication} />} />
+						<Match exactly pattern="/stored/audit" render={() => <AuditList checkAuth={this.checkAuthentication} />} />
+						<Match exactly pattern="/audit/:AuditID" render={() => <Audit checkAuth={this.checkAuthentication} />} />
+						<Miss component={NotFound} />
+					</div>
+				</BrowserRouter>
+			</div>
+		);
+	}
+}
 
 ReactDOM.render(
   <RootComponent />,

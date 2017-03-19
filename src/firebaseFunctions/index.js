@@ -24,7 +24,7 @@ export function isSignedIn(user){
 }
 
 export function signOut(){
-	Firebase.auth().signOut;
+	return Firebase.auth().signOut;
 }
 //Database Functions
 //gets allcourses, calls callback with an object, with one property "courses",

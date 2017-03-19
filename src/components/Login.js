@@ -9,16 +9,11 @@ class Login extends Component {
 	constructor() {
 		super();
 		this.responseGoogle = this.responseGoogle.bind(this);
-		this.state = {
-			googleToken:cookie.load('TOKEN', true)
-		};
 	}
 
-	componentWillMount(){
-		let googCook = cookie.load('TOKEN', true);
+	componentDidMount(){
 		//if we're already signed in, route to the dashboard.
-		if(googCook) {
-			FirebaseActions.signInUser(googCook);
+		if(this.props.checkAuth('Login')) {
 			this.context.router.transitionTo('/dashboard');
 		}
 	}
@@ -29,11 +24,12 @@ class Login extends Component {
 			cookie.save('TOKEN', response.tokenId, {
 				expires:new Date(response.tokenObj.expires_at)
 			});
-			
+
 			FirebaseActions.signInUser(response.tokenId);
+			this.props.checkAuth('Login');
 			this.context.router.transitionTo('/dashboard');
 		}else{
-			console.log('NON-MTU EMAIL: (' + response.profileObj.email.endsWith('@mtu.edu') + ')');
+			alert('MTU EMAIL: (' + response.profileObj.email.endsWith('@mtu.edu') + ')');
 		}
 	}
 
