@@ -37,7 +37,7 @@ class NavBar extends Component {
 		if (this.props.signedIn) {
 			return signOutButton;
 		} else {
-			return (<div></div>);
+			return;
 		}
 	}
 
