@@ -1,3 +1,10 @@
+/* To use this module call getData, and then use .then to get the data into a
+ * function. That is, getData returns a promise which will either return the
+ * desired json or an error.
+ *
+ * For an example that logs the result see testParser.js
+ */
+
 /* Stuff that needs to be parsed out:
  * name
  * description
@@ -9,24 +16,41 @@
  * co-reqs
  */
 
-process.on('unhandledRejection', console.log.bind(console));
+module.exports = {
+	getData: getData
+}
 
-console.log('starting');
+function getData() {
 
-let https = require('https');
-const cheerio = require('cheerio');
+	process.on('unhandledRejection', console.log.bind(console));
 
-https.get('https://www.banweb.mtu.edu/pls/owa/stu_ctg_utils.p_online_all_courses_ug', (res) => {
-	console.log('readingData');
-	let rawData = '';
-	res.on('data', (chunk) => rawData += chunk);
-	res.on('end', () => parseData(rawData));
-}).on('error', (e) => {
-	console.log('error' + e);
-});
+	console.log('starting');
+
+	let https = require('https');
+
+	let promise = new Promise(function(resolve, reject) {
+
+	https.get('https://www.banweb.mtu.edu/pls/owa/stu_ctg_utils.p_online_all_courses_ug', (res) => {
+		console.log('readingData');
+		let rawData = '';
+		res.on('data', (chunk) => rawData += chunk);
+		res.on('end', () => resolve(parseData(rawData)));
+
+	}).on('error', (e) => {
+		reject(e);
+	});
+
+	});
+
+	return promise;
+}
+
 
 function parseData(rawData)
 {
+	console.log('processing data');
+
+	let cheerio = require('cheerio');
 	let $ = cheerio.load(rawData);
 
 	//console.log($('#content').find('b').text());
@@ -60,10 +84,11 @@ function parseData(rawData)
 		//console.log(className);
 		ret.Courses[classNumSP].name = className;
 
-		let descRegExp = /Credits: \d/;
+		let descRegExp = /Credits/;
 		let description = strings[i + 1].split(descRegExp)[0].trimRight();
 		//console.log(description);
 		ret.Courses[classNumSP].description = description;
+		//console.log(description);
 
 		let creditsRegExp = /Credits:\s*(\d\.\d)/;
 		let numRegExp = /\d\.\d/;
@@ -137,5 +162,6 @@ function parseData(rawData)
 		} catch (e) {}
 	}
 
-	console.log(ret);	
+	//console.log(ret);
+	return ret;
 }
