@@ -78,6 +78,7 @@ function parseData(rawData)
 		classNumSP = classNum.replace(' ', '_');
 		//console.log(classNum);
 		ret.Courses[classNumSP] = {};
+		ret.Courses[classNumSP].prettyClassNum = classNum;
 
 		let classNameRegExp = /- (.*)\n/;
 		let className = classNameRegExp.exec(strings[i])[1];
@@ -124,30 +125,32 @@ function parseData(rawData)
 		//console.log(lab);
 
 		let semestersRegExp = /Semesters Offered: .*\n/;
-		let semesters = semestersRegExp.exec(strings[i + 1])[0].replace('Semesters Offered: ', '');
+		let semesters = semestersRegExp.exec(strings[i + 1])[0].replace('Semesters Offered: ', '').trim();
 		//console.log(semesters);
 		ret.Courses[classNumSP].semesters = semesters;
 
+		let prereqString = '';
 		try {
 			let prereqRegExp = /Pre-Requisite\(s\): /;
 			//console.log(strings[i + 1].search(prereqRegExp));
-			let prereqString = strings[i + 1].split(prereqRegExp)[1].split('\n')[0];
+			prereqString = strings[i + 1].split(prereqRegExp)[1].split('\n')[0];
 			//console.log(prereqString);
 			/* TODO Parse out pre-reqs, for now just put them all in a string
 			while (let coreqOrsRes = /\(.*\)/.exec(prereqString) != null) {
 				while
 			}
 			*/
-			ret.Courses[ClassNumSP].prereqs = prereqString;
+			ret.Courses[classNumSP].prereqs = prereqString;
 		} catch (e) {
 			//console.log(e);
 			//console.log('i: ' + i);
 			//return;
 		}
 
+		let coreq = '';
 		try {
 			let coreqRegExp = /Co-Requisite\(s\): /;
-			let coreq = strings[i+1].split(coreqRegExp)[1].split('\n')[0].trim();
+			coreq = strings[i+1].split(coreqRegExp)[1].split('\n')[0].trim();
 			//console.log(coreq);
 			ret.Courses[classNumSP].coreqs = coreq;
 		} catch(e) {
