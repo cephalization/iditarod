@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import cookie from 'react-cookie';
+import * as FirebaseActions from '../firebaseFunctions';
 
 class Dashboard extends Component {
 	constructor() {
@@ -17,19 +19,28 @@ class Dashboard extends Component {
 		this.retrieveCourses();
 	}
 
+	componentWillMount(){
+		//if we're not signed in, then we need to re-auth, or redirect to the login page.
+		if(FirebaseActions.getCurrentUser() === null){
+			let googCook = cookie.load('TOKEN', true);
+			if(googCook) {
+				FirebaseActions.signInUser(googCook);
+			}else{
+				this.context.router.transitionTo('/');
+			}
+		}
+	}
+
 	retrieveCourses() {
 		// Make modifications to an object referring the class's 'this'
 		let coursesRef = this;
-
-		// Fetch the data, convert response to json, assign json object to 'courses'
-		fetch('/courses/allCourses').then((response) => response.json())
-		.then(function (response) {
-			console.log(response);
+		// Fetch the data from firebase
+		FirebaseActions.allCourses(function (response) {
 			let courses = [];
 
 			for (let course in response.courses) {
 				if (response.courses.hasOwnProperty(course)) {
-					console.log('course is', course);
+					//console.log('course is', course);
 					courses.push(
 						// This code needs to be abstracted into a class Component Talk to Tony about
 						// how to pass props, etc
@@ -40,9 +51,6 @@ class Dashboard extends Component {
 			coursesRef.setState({
 				courses: courses
 			});
-		})
-		.catch(function(error) {
-			console.log(error);
 		});
 	}
 
@@ -58,5 +66,9 @@ class Dashboard extends Component {
 			</div>);
 	}
 }
+
+Dashboard.contextTypes = {
+	router: React.PropTypes.object
+};
 
 export default Dashboard;

@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import GoogleLogin from 'react-google-login';
+import * as FirebaseActions from '../firebaseFunctions';
+import cookie from 'react-cookie';
 //import GoogleAuth from 'vue-google-auth';
 import './style/Login.css';
 
@@ -7,15 +9,31 @@ class Login extends Component {
 	constructor() {
 		super();
 		this.responseGoogle = this.responseGoogle.bind(this);
+		this.state = {
+			googleToken:cookie.load('TOKEN', true)
+		};
+	}
+
+	componentWillMount(){
+		let googCook = cookie.load('TOKEN', true);
+		//if we're already signed in, route to the dashboard.
+		if(googCook) {
+			FirebaseActions.signInUser(googCook);
+			this.context.router.transitionTo('/dashboard');
+		}
 	}
 
 	responseGoogle(response) {
-		// Successful response from google
-		if (response.googleId) {
-			// TODO: Authenticate with firebase
-			// TODO: Send google and firebase authentication info to node to create a cookie
-			// Route the logged in user to their dashboard
+		// Successful response from google, make sure it's a mtu email
+		if (response.googleId && response.profileObj.email.endsWith('@mtu.edu')) {
+			cookie.save('TOKEN', response.tokenId, {
+				expires:new Date(response.tokenObj.expires_at)
+			});
+			
+			FirebaseActions.signInUser(response.tokenId);
 			this.context.router.transitionTo('/dashboard');
+		}else{
+			console.log('NON-MTU EMAIL: (' + response.profileObj.email.endsWith('@mtu.edu') + ')');
 		}
 	}
 
