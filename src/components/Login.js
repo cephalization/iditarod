@@ -12,38 +12,34 @@ class Login extends Component {
 	}
 
 	componentDidMount(){
+		this._isMounted = true;
 		//if we're already signed in, route to the dashboard.
-		if(this.props.checkAuth('Login')) {
+		const props = this.props;
+		if(props.checkAuth('Login')) {
 			this.context.router.transitionTo('/dashboard');
 		}
 	}
 
-	responseGoogle(response) {
-		// Successful response from google, make sure it's a mtu email
-		if (response.googleId && response.profileObj.email.endsWith('@mtu.edu')) {
-			cookie.save('TOKEN', response.tokenId, {
-				expires:new Date(response.tokenObj.expires_at)
-			});
-
-			FirebaseActions.signInUser(response.tokenId);
-			this.props.checkAuth('Login');
-			this.context.router.transitionTo('/dashboard');
-		}else{
-			alert('MTU EMAIL: (' + response.profileObj.email.endsWith('@mtu.edu') + ')');
-		}
+	componentWillUnmount() {
+		this._isMounted = false;
 	}
 
-	// Code for possible future signin/out
-	/*Vue.use(GoogleAuth, { clientID: '419580728333-lrjvoak9e2kjapl3b6t82nlekrkl3ltq.apps.googleusercontent.com'})
-	Vue.googleAuth().load()*/
+	responseGoogle(response, props) {
+		if (this._isMounted) {
+			// Successful response from google, make sure it's a mtu email
+			if (response.googleId && response.profileObj.email.endsWith('@mtu.edu')) {
+				cookie.save('TOKEN', response.tokenId, {
+					expires:new Date(response.tokenObj.expires_at)
+				});
 
-	//Code for the sign out function. Will work once gapi is figured out
-	/*signOut(googleUser) {
-		var auth2 = gapi.auth2.getAuthInstance();
-		auth2.signOut().then(function () {
-		console.log('User signed out.');
-		});
-	}*/
+				FirebaseActions.signInUser(response.tokenId);
+				props.checkAuth('Login');
+				this.context.router.transitionTo('/dashboard');
+			}else{
+				alert('MTU EMAIL: (' + response.profileObj.email.endsWith('@mtu.edu') + ')');
+			}
+		}
+	}
 
 	render() {
 		return (
@@ -57,8 +53,8 @@ class Login extends Component {
 						<GoogleLogin
 							clientId="419580728333-lrjvoak9e2kjapl3b6t82nlekrkl3ltq.apps.googleusercontent.com"
 							buttonText="Login with MTU Email"
-							onSuccess={this.responseGoogle}
-							onFailure={this.responseGoogle}
+							onSuccess={(response) => {this.responseGoogle(response, this.props);}}
+							onFailure={(response) => {this.responseGoogle(response, this.props);}}
 							/>
 					</div>
 				</div>
@@ -67,9 +63,12 @@ class Login extends Component {
 	}
 }
 
-
 Login.contextTypes = {
 	router: React.PropTypes.object
+};
+
+Login.PropTypes = {
+	checkAuth: React.PropTypes.func
 };
 
 export default Login;

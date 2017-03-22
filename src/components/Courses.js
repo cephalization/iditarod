@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 
 class Course extends Component {
 
-	componentWillMount(){
-		this.props.checkAuth("Courses");
+	componentDidMount(){
+		const props = this.props;
+		props.checkAuth('Courses');
 	}
 
 	render() {
@@ -19,6 +20,10 @@ class Course extends Component {
 
 Course.contextTypes = {
 	router: React.PropTypes.object
+};
+
+Course.PropTypes = {
+	checkAuth: React.PropTypes.func
 };
 
 export default Course;

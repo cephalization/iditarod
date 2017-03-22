@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 
 class AuditList extends Component {
-	componentWillMount(){
-		this.props.checkAuth("AuditList");
+	componentDidMount(){
+		const props = this.props;
+		props.checkAuth('AuditList');
 	}
 
 	render() {
@@ -18,6 +19,10 @@ class AuditList extends Component {
 
 AuditList.contextTypes = {
 	router: React.PropTypes.object
+};
+
+AuditList.PropTypes = {
+	checkAuth: React.PropTypes.func
 };
 
 export default AuditList;
