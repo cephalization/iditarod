@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as FirebaseActions from '../firebaseFunctions';
+import './style/Courses.css';
 
 class Course extends Component {
 

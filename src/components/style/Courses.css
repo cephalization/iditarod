@@ -1,4 +1,10 @@
 .class {
-max-height: 300px;
+max-height: 600px;
 overflow-y: auto;
+text-align: center;
+}
+
+.class h1 {
+	font-size: 200%;
+	font-weight: bold;
 }
