@@ -18,10 +18,10 @@ class NavBar extends Component {
 	}
 
 	signOut() {
+		// delete their auth cookie
+		cookie.remove('TOKEN', {path:'/'});
 		// signout user from firebase
 		FirebaseActions.signOut();
-		// delete their auth cookie
-		cookie.remove('TOKEN');
 		// transition the user
 		window.location.href='/';
 	}

@@ -29,7 +29,8 @@ class Login extends Component {
 			// Successful response from google, make sure it's a mtu email
 			if (response.googleId && response.profileObj.email.endsWith('@mtu.edu')) {
 				cookie.save('TOKEN', response.tokenId, {
-					expires:new Date(response.tokenObj.expires_at)
+					expires:new Date(response.tokenObj.expires_at),
+					path:'/'
 				});
 
 				FirebaseActions.signInUser(response.tokenId);

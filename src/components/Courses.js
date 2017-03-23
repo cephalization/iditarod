@@ -16,20 +16,18 @@ class Course extends Component {
 		this.state = {
 			courses: []
 		};
-		//Async call to retrieve courses
-		this.retrieveCourses();
 	}
 
 	componentDidMount(){
 		const props = this.props;
 		props.checkAuth('Courses');
+		//Async call to retrieve courses
+		this.retrieveCourses();
 	}
 
-	componentWillMount(){
-		const props = this.props;
-		props.checkAuth('Courses');
+	componentWillUnmount() {
+		this.state.setState({courses: []});
 	}
-
 
 	retrieveCourses() {
 		// Make modifications to an object referring the class's 'this'
