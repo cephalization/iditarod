@@ -35,14 +35,20 @@ class Course extends Component {
 		// Fetch the data from firebase
 		FirebaseActions.allCourses(function (response) {
 			let courses = [];
-
+			console.log('All courses are', response.courses);
 			for (let course in response.courses) {
 				if (response.courses.hasOwnProperty(course)) {
-					//console.log('course is', course);
+					const courseObject = response.courses[course];
 					courses.push(
 						// This code needs to be abstracted into a class Component Talk to Tony about
 						// how to pass props, etc
-						<li key={course}> { course + ' - ' + response.courses[course].name}</li>
+						<li key={course} className="information-panel">
+							{ courseObject.prettyClassNum + ' - ' + courseObject.name}
+							<br />
+							{ courseObject.credits } credit(s)
+							<br />
+							Available { courseObject.semesters}
+						</li>
 					);
 				}
 			}
@@ -56,11 +62,13 @@ class Course extends Component {
 	render() {
 		return (
 			<div>
-				<div className='property-list'>
-					<h1>Course List</h1>
-					<ul>
-						{this.state.courses}
-					</ul>
+				<div className="row">
+					<div className='col s12 m6 l6'>
+						<h4>Course List</h4>
+						<ul className='property-list'>
+							{this.state.courses}
+						</ul>
+					</div>
 				</div>
 			</div>
 		);

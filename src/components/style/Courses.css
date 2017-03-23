@@ -2,9 +2,7 @@
 max-height: 600px;
 overflow-y: auto;
 text-align: center;
-}
-
-.property-list h1 {
-	font-size: 200%;
-	font-weight: bold;
+width: 60%;
+margin-left: auto;
+margin-right: auto;
 }
