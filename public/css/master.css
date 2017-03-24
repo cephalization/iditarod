@@ -31,6 +31,12 @@ h2 {
 /*
 	Common Layouts
 */
+
+.row {
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
 .content-section {
 	padding: 15px;
 	width: 100%;
@@ -42,9 +48,6 @@ h2 {
 }
 
 .information-panel {
-	max-width: 70%;
-	min-height: 80px;
-	max-height: 120px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	background-color: #FFF;
@@ -55,6 +58,18 @@ h2 {
 	margin-bottom: 5px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.panel-lg {
+	max-width: 80%;
+	min-height: 120px;
+	max-height: 400px;
+}
+
+.panel-sm {
+	max-width: 70%;
+	min-height: 80px;
+	max-height: 300px;
 }
 
 /*
