@@ -44,7 +44,7 @@ h2 {
 .information-panel {
 	max-width: 70%;
 	min-height: 80px;
-	max-height: 120px;
+	max-height: 300px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	background-color: #FFF;

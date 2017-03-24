@@ -43,12 +43,10 @@ class Course extends Component {
 					courses.push(
 						// This code needs to be abstracted into a class Component Talk to Tony about
 						// how to pass props, etc
+						
 						<li key={course} className="information-panel">
-							{ courseObject.prettyClassNum + ' - ' + courseObject.name}
-							<br />
-							{ courseObject.credits } credit(s)
-							<br />
-							Available { courseObject.semesters}
+							<div className="collapsible-header">{courseObject.prettyClassNum + ' - ' + courseObject.name}</div>
+							<div className="collapsible-body"><span>{courseObject.credits} credit(s) <br></br>Available {courseObject.semesters}</span></div>
 						</li>
 					);
 				}
@@ -66,7 +64,7 @@ class Course extends Component {
 				<div className="row">
 					<div className='col s12 m6 l6'>
 						<h4>Course List</h4>
-						<ul className='property-list'>
+						<ul className='property-list collapsible' data-collapsible="accordion">
 							{this.state.courses}
 						</ul>
 					</div>
