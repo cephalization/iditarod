@@ -9,15 +9,29 @@ class Dashboard extends Component {
 		props.checkAuth('Dashboard');
 	}
 
-	componentWillUnmount() {
-		console.log('Dashboard unmounted!');
-	}
-
 	render() {
 		return (
 			<div>
 				<div className="container">
-					<h2>Dashboard</h2>
+					<div className="row">
+						<div className="col l8">
+							<div className="information-panel panel-lg">
+								Dashboard main panel
+							</div>
+						</div>
+						<div className="col l4">
+							<div className="row">
+								<div className="information-panel panel-sm">
+									Dashboard side panel top
+								</div>
+							</div>
+							<div className="row">
+								<div className="information-panel panel-sm">
+									Dashboard side panel bottom
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>);
 	}
