@@ -21,6 +21,7 @@ class Course extends Component {
 	componentDidMount(){
 		const props = this.props;
 		props.checkAuth('Courses');
+		window.$('.collapsible').collapsible();
 		//Async call to retrieve courses
 		this.retrieveCourses();
 	}
