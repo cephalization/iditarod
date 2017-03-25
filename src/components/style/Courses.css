@@ -1,8 +1,12 @@
 .property-list {
-max-height: 600px;
+max-height: calc(100vh - 150px);
 overflow-y: auto;
 text-align: center;
 width: 60%;
 margin-left: auto;
 margin-right: auto;
+}
+
+.collapsible-header {
+  background-color: #D1D1D1 !important;
 }

@@ -43,10 +43,10 @@ class Course extends Component {
 					courses.push(
 						// This code needs to be abstracted into a class Component Talk to Tony about
 						// how to pass props, etc
-						
-						<li key={course} className="information-panel">
-							<div className="collapsible-header">{courseObject.prettyClassNum + ' - ' + courseObject.name}</div>
-							<div className="collapsible-body"><span>{courseObject.credits} credit(s) <br></br>Available {courseObject.semesters}</span></div>
+
+						<li key={course} className="information-panel panel-sm">
+							<div className="collapsible-header">{courseObject.prettyClassNum} <br /> {courseObject.name}</div>
+							<div className="collapsible-body"><span>{courseObject.credits} credit(s) <br /> Available {courseObject.semesters}</span></div>
 						</li>
 					);
 				}
