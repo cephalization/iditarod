@@ -12,6 +12,9 @@ class Course extends Component {
 		this.retrieveCourses = this
 		.retrieveCourses
 		.bind(this);
+		this.renderCourse = this
+		.renderCourse
+		.bind(this);
 		//Set up our state
 		this.state = {
 			courses: []
@@ -30,6 +33,41 @@ class Course extends Component {
 		this.state.setState({courses: []});
 	}
 
+	renderCourse(course, keyName, taken) {
+		let courseActions;
+		if (taken) {
+			courseActions = (
+				<div>
+					<button className="btn waves-effect waves-light">Remove from Courses</button>
+				</div>
+			);
+		} else {
+			courseActions = (
+				<div>
+					<button className="btn waves-effect waves-light">Add to Courses</button>
+				</div>
+			);
+		}
+		const courseItem = (
+			<li key={keyName} className="information-panel panel-sm">
+				<div className="collapsible-header">
+					{course.prettyClassNum}
+					<br />
+					{course.name}
+				</div>
+				<div className="collapsible-body">
+					<span>
+						{course.credits} credit(s)
+						<br />
+						Available {course.semesters}
+					</span>
+					{courseActions}
+				</div>
+			</li>
+		);
+		return courseItem;
+	}
+
 	retrieveCourses() {
 		// Make modifications to an object referring the class's 'this'
 		let coursesRef = this;
@@ -41,13 +79,7 @@ class Course extends Component {
 				if (response.courses.hasOwnProperty(course)) {
 					const courseObject = response.courses[course];
 					courses.push(
-						// This code needs to be abstracted into a class Component Talk to Tony about
-						// how to pass props, etc
-
-						<li key={course} className="information-panel panel-sm">
-							<div className="collapsible-header">{courseObject.prettyClassNum} <br /> {courseObject.name}</div>
-							<div className="collapsible-body"><span>{courseObject.credits} credit(s) <br /> Available {courseObject.semesters}</span></div>
-						</li>
+						coursesRef.renderCourse(courseObject, course)
 					);
 				}
 			}
