@@ -7,6 +7,15 @@ margin-left: auto;
 margin-right: auto;
 }
 
+.property-list li {
+  width: 80%;
+}
+
 .collapsible-header {
   background-color: #D1D1D1 !important;
+  width: 100%;
+}
+
+.collapsible-body {
+  width: 100%;
 }

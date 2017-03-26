@@ -12,22 +12,28 @@ class Dashboard extends Component {
 	render() {
 		return (
 			<div>
-				<div className="container">
-					<div className="row">
-						<div className="col l8">
+				<div>
+					<div className="row center-align">
+						<div className="col l8 m8 s12">
 							<div className="information-panel panel-lg">
-								Dashboard main panel
+								<h2>Overall Degree Completion</h2>
+								<p>IF degree not selected, offer selection of degrees</p>
+								<p>ELSE show a chart.js chart offering an overall percentage of completion</p>
 							</div>
 						</div>
-						<div className="col l4">
-							<div className="row">
+						<div className="col l4 m4 s12">
+							<div className="col l12 m12 s12">
 								<div className="information-panel panel-sm">
-									Dashboard side panel top
+									<h3>Courses</h3>
+									<p>IF courses have not been added, show link to add courses</p>
+									<p>ELSE show most recent courses added</p>
 								</div>
 							</div>
-							<div className="row">
+							<div className="col l12 m12 s12">
 								<div className="information-panel panel-sm">
-									Dashboard side panel bottom
+									<h3>Audits</h3>
+									<p>IF audit has not been run, show link to run degree audit</p>
+									<p>ELSE audit has been run, show link to view audit</p>
 								</div>
 							</div>
 						</div>
