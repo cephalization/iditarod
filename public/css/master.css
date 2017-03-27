@@ -7,6 +7,14 @@
 /*
 	Element Defaults
 */
+html {
+	box-sizing: border-box;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+
 body {
 	font-family: 'Roboto', Arial, Helvetica, sans-serif;
 	background-color: #F2F2F2;
@@ -31,6 +39,12 @@ h2 {
 /*
 	Common Layouts
 */
+
+.row {
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
 .content-section {
 	padding: 15px;
 	width: 100%;
@@ -39,6 +53,31 @@ h2 {
 .center-object {
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.information-panel {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	background-color: #FFF;
+	border-radius: 5px;
+	-webkit-box-shadow: 3px 3px 5px 6px #ccc;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+  -moz-box-shadow: 3px 3px 5px 6px #ccc;  /* Firefox 3.5 - 3.6 */
+  box-shadow: 3px 3px 5px 6px #ccc;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+	margin-top: 15px;
+	margin-bottom: 15px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+}
+
+.panel-lg {
+	min-height: 120px;
+	max-height: 400px;
+}
+
+.panel-sm {
+	min-height: 80px;
+	max-height: 300px;
 }
 
 /*

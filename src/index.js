@@ -46,9 +46,7 @@ class RootComponent extends React.Component {
 				if (this.setState.signedIn) {
 					this.setState({signedIn:false});
 				}
-				console.log('Location is', window.location);
 				if (window.location.pathname !== '/') {
-					console.log('reroute required');
 					window.location.href = '/';
 				}
 				return false;
@@ -66,7 +64,6 @@ class RootComponent extends React.Component {
 	// }
 
 	render () {
-		console.log(Match);
 		return (
 			<div>
 				<NavBar signedIn={this.state.signedIn} />
