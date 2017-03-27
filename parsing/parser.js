@@ -79,6 +79,8 @@ function parseData(rawData)
 		//console.log(classNum);
 		ret.Courses[classNumSP] = {};
 		ret.Courses[classNumSP].prettyClassNum = classNum;
+		let department = classNumSP.split('_')[0];
+		ret.Courses[classNumSP].department = department;
 
 		let classNameRegExp = /- (.*)\n/;
 		let className = classNameRegExp.exec(strings[i])[1];
