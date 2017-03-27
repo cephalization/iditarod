@@ -79,7 +79,6 @@ class Course extends Component {
 				if (response.courses.hasOwnProperty(course)) {
 					const courseObject = response.courses[course];
 					courses.push(
-<<<<<<< HEAD
 						// This code needs to be abstracted into a class Component Talk to Tony about
 						// how to pass props, etc
 						
@@ -87,9 +86,7 @@ class Course extends Component {
 							<div className="collapsible-header">{courseObject.prettyClassNum + ' - ' + courseObject.name}</div>
 							<div className="collapsible-body"><span>{courseObject.credits} credit(s) <br></br>Available {courseObject.semesters}</span></div>
 						</li>
-=======
 						coursesRef.renderCourse(courseObject, course)
->>>>>>> 3830a4e477fe59ed2e53d4274bc14aa664de14a6
 					);
 				}
 			}
