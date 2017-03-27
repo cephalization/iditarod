@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 class Dashboard extends Component {
 
 	componentDidMount(){
-		console.log(this);
 		const props = this.props;
 		//if we're not signed in, then we need to re-auth, or redirect to the login page.
 		props.checkAuth('Dashboard');
