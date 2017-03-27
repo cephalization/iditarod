@@ -49,11 +49,12 @@ h2 {
 
 .information-panel {
 	overflow: hidden;
+	overflow-y: visible;
 	text-overflow: ellipsis;
 	background-color: #FFF;
 	border-radius: 5px;
 	box-shadow: 1px 2px grey;
-	padding: 6px 6px 2px 8px;
+	padding: 6px 3px 2px 8px;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	margin-left: auto;
@@ -61,15 +62,15 @@ h2 {
 }
 
 .panel-lg {
-	max-width: 80%;
+	max-width: 90%;
 	min-height: 120px;
 	max-height: 400px;
 }
 
 .panel-sm {
-	max-width: 70%;
-	min-height: 80px;
-	max-height: 300px;
+	max-width: 90%;
+	min-height: 60px;
+	max-height: 175px;
 }
 
 /*

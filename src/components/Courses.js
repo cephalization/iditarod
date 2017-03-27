@@ -44,7 +44,7 @@ class Course extends Component {
 						// This code needs to be abstracted into a class Component Talk to Tony about
 						// how to pass props, etc
 						
-						<li key={course} className="information-panel">
+						<li key={course} className="information-panel panel-sm">
 							<div className="collapsible-header">{courseObject.prettyClassNum + ' - ' + courseObject.name}</div>
 							<div className="collapsible-body"><span>{courseObject.credits} credit(s) <br></br>Available {courseObject.semesters}</span></div>
 						</li>
@@ -64,7 +64,7 @@ class Course extends Component {
 				<div className="row">
 					<div className='col s12 m6 l6'>
 						<h4>Course List</h4>
-						<ul className='property-list collapsible' data-collapsible="accordion">
+						<ul className='property-list collapsible' data-collapsible='accordion'>
 							{this.state.courses}
 						</ul>
 					</div>
