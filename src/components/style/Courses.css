@@ -7,6 +7,10 @@ margin-left: auto;
 margin-right: auto;
 }
 
+.custom-select {
+  width: 60%;
+}
+
 .property-list li {
   width: 80%;
 }
