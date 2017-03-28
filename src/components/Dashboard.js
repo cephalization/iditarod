@@ -34,10 +34,7 @@ class Dashboard extends Component {
 		FirebaseActions.courseHistory(cookie.load('TOKEN'), function (response){
 			const courseHistory = response.userSpace.Courses;
 			console.log(courseHistory);
-			if (courseHistory === 'Empty') {
-				console.log('There is no course history for the user');
-				dashboardRef.loadCourseHistory(false);
-			} else {
+			if (courseHistory.initialized) {
 				let courseList = [];
 				for (let course in courseHistory) {
 					if (courseHistory.hasOwnProperty(course)) {
@@ -47,6 +44,9 @@ class Dashboard extends Component {
 						courseHistory:courseList
 					});
 				}
+			} else {
+				console.log('There is no course history for the user');
+				dashboardRef.loadCourseHistory(false);
 			}
 		});
 	}

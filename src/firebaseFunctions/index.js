@@ -18,8 +18,8 @@ export function signInUser(googleToken){
 		let curUser = Firebase.auth().currentUser.uid;
 		console.log('checked if user ' + curUser + ' existed.');
 		if(!snapshot.hasChild(curUser)){
-			database.ref('Users/' + curUser).set({'Audits':'Empty',
-				'Courses':'Empty'});
+			database.ref('Users/' + curUser).set({'Audits':{initialized:false},
+				'Courses':{initialized:false}});
 
 			console.log('User doesn\'t exist, adding.');
 		}
