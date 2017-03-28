@@ -1,11 +1,76 @@
 import React, {Component} from 'react';
+import * as FirebaseActions from '../firebaseFunctions';
+import cookie from 'react-cookie';
 
 class Dashboard extends Component {
+
+	constructor() {
+		super();
+
+		this.retrieveAuditHistory = this.retrieveAuditHistory.bind(this);
+		this.retrieveCourses = this.retrieveCourseHistory.bind(this);
+		this.loadCourseHistory = this.loadCourseHistory.bind(this);
+		this.renderCourseHistory = this.renderCourseHistory.bind(this);
+
+		this.state = {
+			courseHistory: [],
+			auditHistory: []
+		};
+	}
 
 	componentDidMount(){
 		const props = this.props;
 		//if we're not signed in, then we need to re-auth, or redirect to the login page.
 		props.checkAuth('Dashboard');
+		this.retrieveCourseHistory();
+	}
+
+	retrieveAuditHistory() {
+
+	}
+
+	retrieveCourseHistory() {
+		let dashboardRef = this;
+		FirebaseActions.courseHistory(cookie.load('TOKEN'), function (response){
+			const courseHistory = response.userSpace.Courses;
+			console.log(courseHistory);
+			if (courseHistory === 'Empty') {
+				console.log('There is no course history for the user');
+				dashboardRef.loadCourseHistory(false);
+			} else {
+				let courseList = [];
+				for (let course in courseHistory) {
+					if (courseHistory.hasOwnProperty(course)) {
+						courseList.push(dashboardRef.renderCourseHistory(courseHistory[course]));
+					}
+					dashboardRef.setState({
+						courseHistory:courseList
+					});
+				}
+			}
+		});
+	}
+
+	renderCourseHistory(course) {
+		const courseInfo = (
+			<li key={course.name}>{course.name}</li>
+		);
+		return courseInfo;
+	}
+
+	loadCourseHistory(historyExists) {
+		if (historyExists) {
+			return;
+		} else {
+			const notExists = (
+				<div>
+					<p>You have not taken any courses yet!</p>
+				</div>
+			);
+			this.setState({
+				courseHistory: notExists
+			});
+		}
 	}
 
 	render() {
@@ -24,8 +89,7 @@ class Dashboard extends Component {
 							<div className="col l12 m12 s12">
 								<div className="information-panel panel-sm">
 									<h3>Courses</h3>
-									<p>IF courses have not been added, show link to add courses</p>
-									<p>ELSE show most recent courses added</p>
+									{this.state.courseHistory}
 								</div>
 							</div>
 							<div className="col l12 m12 s12">

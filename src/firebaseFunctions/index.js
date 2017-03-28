@@ -50,3 +50,16 @@ export function allCourses(callback){
 		});
 	});
 }
+
+export function courseHistory(cookie, callback){
+	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
+	Firebase.auth().signInWithCredential(cred).then(function(user) {
+		const uid = user.uid;
+		let userCourses = database.ref('Users/' + uid);
+		userCourses.once('value', function(snapshot){
+			callback({
+				'userSpace': snapshot.val()
+			});
+		});
+	});
+}
