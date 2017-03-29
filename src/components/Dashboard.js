@@ -8,13 +8,17 @@ class Dashboard extends Component {
 		super();
 
 		this.retrieveAuditHistory = this.retrieveAuditHistory.bind(this);
-		this.retrieveCourses = this.retrieveCourseHistory.bind(this);
-		this.loadCourseHistory = this.loadCourseHistory.bind(this);
+		this.renderAudit = this.renderAudit.bind(this);
+		this.renderAuditHistory = this.renderAuditHistory.bind(this);
+		this.retrieveCourseHistory = this.retrieveCourseHistory.bind(this);
+		this.renderCourse = this.renderCourse.bind(this);
 		this.renderCourseHistory = this.renderCourseHistory.bind(this);
 
 		this.state = {
 			courseHistory: [],
-			auditHistory: []
+			courseInitialized: true,
+			auditHistory: [],
+			auditInitialized: true
 		};
 	}
 
@@ -29,6 +33,14 @@ class Dashboard extends Component {
 
 	}
 
+	renderAudit() {
+
+	}
+
+	renderAuditHistory() {
+		
+	}
+
 	retrieveCourseHistory() {
 		let dashboardRef = this;
 		FirebaseActions.courseHistory(cookie.load('TOKEN'), function (response){
@@ -36,40 +48,52 @@ class Dashboard extends Component {
 			console.log(courseHistory);
 			if (courseHistory.initialized) {
 				let courseList = [];
+				let maxHist = 3;
+				let hist = 0;
 				for (let course in courseHistory) {
-					if (courseHistory.hasOwnProperty(course)) {
-						courseList.push(dashboardRef.renderCourseHistory(courseHistory[course]));
+					if (courseHistory.hasOwnProperty(course) && course !== 'initialized' && hist < maxHist) {
+						courseList.push(dashboardRef.renderCourse(courseHistory[course]));
+						hist ++;
 					}
 					dashboardRef.setState({
-						courseHistory:courseList
+						courseHistory: courseList,
 					});
 				}
 			} else {
 				console.log('There is no course history for the user');
-				dashboardRef.loadCourseHistory(false);
+				dashboardRef.setState({
+					courseInitialized: courseHistory.initialized
+				});
 			}
 		});
 	}
 
-	renderCourseHistory(course) {
+	renderCourse(course) {
 		const courseInfo = (
 			<li key={course.name}>{course.name}</li>
 		);
 		return courseInfo;
 	}
 
-	loadCourseHistory(historyExists) {
-		if (historyExists) {
-			return;
-		} else {
-			const notExists = (
-				<div>
-					<p>You have not taken any courses yet!</p>
+	renderCourseHistory() {
+		if (this.state.courseInitialized) {
+			const exists = (
+				<div className="content-section">
+					<p>Your most recent courses</p>
+					<ul>
+						{this.state.courseHistory.length ? this.state.courseHistory : '...' }
+					</ul>
 				</div>
 			);
-			this.setState({
-				courseHistory: notExists
-			});
+			return exists;
+		} else {
+			const notExists = (
+				<div className="content-section">
+					<p>You have not taken any courses yet!</p>
+					<a className="btn" href="/courses">Add Courses</a>
+				</div>
+			);
+			return notExists;
 		}
 	}
 
@@ -89,14 +113,13 @@ class Dashboard extends Component {
 							<div className="col l12 m12 s12">
 								<div className="information-panel panel-sm">
 									<h3>Courses</h3>
-									{this.state.courseHistory}
+									{this.renderCourseHistory()}
 								</div>
 							</div>
 							<div className="col l12 m12 s12">
 								<div className="information-panel panel-sm">
 									<h3>Audits</h3>
-									<p>IF audit has not been run, show link to run degree audit</p>
-									<p>ELSE audit has been run, show link to view audit</p>
+									{this.state.auditHistory}
 								</div>
 							</div>
 						</div>
