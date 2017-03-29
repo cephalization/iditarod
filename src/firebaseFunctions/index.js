@@ -51,7 +51,7 @@ export function allCourses(callback){
 	});
 }
 
-export function courseHistory(cookie, callback){
+export function userSpace(cookie, callback){
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {
 		const uid = user.uid;

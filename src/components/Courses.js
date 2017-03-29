@@ -45,23 +45,23 @@ class Course extends Component {
 				</div>
 			);
 		}
-			const courseItem = (
-				<li key={keyName} className="information-panel panel-sm">
-					<div className="collapsible-header">
-						{course.prettyClassNum}
+		const courseItem = (
+			<li key={keyName} className="information-panel panel-sm">
+				<div className="collapsible-header">
+					{course.prettyClassNum}
+					<br />
+					{course.name}
+				</div>
+				<div className="collapsible-body">
+					<span>
+						{course.credits} credit(s)
 						<br />
-						{course.name}
-					</div>
-					<div className="collapsible-body">
-						<span>
-							{course.credits} credit(s)
-							<br />
-							Available {course.semesters}
-						</span>
-						{courseActions}
-					</div>
-				</li>
-			);
+						Available {course.semesters}
+					</span>
+					{courseActions}
+				</div>
+			</li>
+		);
 		if(course.department === 'CS')
 			return courseItem;
 	}

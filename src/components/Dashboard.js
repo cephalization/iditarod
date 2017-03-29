@@ -38,12 +38,12 @@ class Dashboard extends Component {
 	}
 
 	renderAuditHistory() {
-		
+
 	}
 
 	retrieveCourseHistory() {
 		let dashboardRef = this;
-		FirebaseActions.courseHistory(cookie.load('TOKEN'), function (response){
+		FirebaseActions.userSpace(cookie.load('TOKEN'), function (response){
 			const courseHistory = response.userSpace.Courses;
 			console.log(courseHistory);
 			if (courseHistory.initialized) {
