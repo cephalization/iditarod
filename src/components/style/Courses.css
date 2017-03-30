@@ -1,18 +1,14 @@
 .property-list {
-max-height: calc(100vh - 150px);
-overflow-y: auto;
-text-align: center;
-width: 60%;
-margin-left: auto;
-margin-right: auto;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .custom-select {
   width: 60%;
-}
-
-.property-list li {
-  width: 80%;
 }
 
 .collapsible-header {
@@ -23,3 +19,14 @@ margin-right: auto;
 .collapsible-body {
   width: 100%;
 }
+
+.course-panel {
+  min-height: 140px;
+  max-height: 140px;
+}
+
+/*@media (max-width:768px) {
+  .property-list {
+    width: 100%;
+  }
+}*/

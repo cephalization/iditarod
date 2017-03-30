@@ -45,6 +45,14 @@ h2 {
 	margin-right: auto !important;
 }
 
+.strip-padding {
+	padding: 0;
+}
+
+.c4 {
+	width: 40%;
+}
+
 .content-section {
 	padding: 15px;
 	width: 100%;

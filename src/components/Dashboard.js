@@ -13,11 +13,14 @@ class Dashboard extends Component {
 		this.retrieveCourseHistory = this.retrieveCourseHistory.bind(this);
 		this.renderCourse = this.renderCourse.bind(this);
 		this.renderCourseHistory = this.renderCourseHistory.bind(this);
+		this.retrieveUserSpace = this.retrieveUserSpace.bind(this);
 
 		this.state = {
 			courseHistory: [],
+			courses: [],
 			courseInitialized: true,
 			auditHistory: [],
+			audits: [],
 			auditInitialized: true
 		};
 	}
@@ -26,7 +29,48 @@ class Dashboard extends Component {
 		const props = this.props;
 		//if we're not signed in, then we need to re-auth, or redirect to the login page.
 		props.checkAuth('Dashboard');
-		this.retrieveCourseHistory();
+		this.retrieveUserSpace();
+	}
+
+	retrieveUserSpace() {
+		let outerThis = this;
+		FirebaseActions.userSpace(cookie.load('TOKEN'), function(response){
+			let userSpace = response.userSpace;
+			if (userSpace.Courses.initialized) {
+				let courseList = [];
+				let courses = response.userSpace.Courses;
+				for (let course in courses) {
+					if (courses.hasOwnProperty(course) && course !== 'initialized') {
+						courseList.push(courses[course]);
+					}
+				}
+				outerThis.setState({
+					courses: courseList,
+				});
+				outerThis.retrieveCourseHistory();
+			} else {
+				outerThis.setState({
+					courseInitialized: userSpace.Courses.initialized
+				});
+			}
+			if (userSpace.Audits.initialized) {
+				let auditsList = [];
+				let audits = response.userSpace.Audits;
+				for (let audit in audits) {
+					if (audits.hasOwnProperty(audit) && audit !== 'initialized') {
+						auditsList.push(audits[audit]);
+					}
+				}
+				outerThis.setState({
+					audits: auditsList,
+				});
+				outerThis.retrieveAuditHistory();
+			} else {
+				outerThis.setState({
+					auditInitialized: response.userSpace.Audits.initialized
+				});
+			}
+		});
 	}
 
 	retrieveAuditHistory() {
@@ -42,35 +86,25 @@ class Dashboard extends Component {
 	}
 
 	retrieveCourseHistory() {
-		let dashboardRef = this;
-		FirebaseActions.userSpace(cookie.load('TOKEN'), function (response){
-			const courseHistory = response.userSpace.Courses;
-			console.log(courseHistory);
-			if (courseHistory.initialized) {
-				let courseList = [];
-				let maxHist = 3;
-				let hist = 0;
-				for (let course in courseHistory) {
-					if (courseHistory.hasOwnProperty(course) && course !== 'initialized' && hist < maxHist) {
-						courseList.push(dashboardRef.renderCourse(courseHistory[course]));
-						hist ++;
-					}
-					dashboardRef.setState({
-						courseHistory: courseList,
-					});
+		if (this.state.courseInitialized) {
+			let courseList = [];
+			let maxHist = 3;
+			let hist = 0;
+			for (let course in this.state.courses) {
+				if (this.state.courses.hasOwnProperty(course) && hist < maxHist) {
+					courseList.push(this.renderCourse(this.state.courses[course]));
+					hist ++;
 				}
-			} else {
-				console.log('There is no course history for the user');
-				dashboardRef.setState({
-					courseInitialized: courseHistory.initialized
+				this.setState({
+					courseHistory: courseList,
 				});
 			}
-		});
+		}
 	}
 
 	renderCourse(course) {
 		const courseInfo = (
-			<li key={course.name}>{course.name}</li>
+			<li key={course.num}>{course.name}</li>
 		);
 		return courseInfo;
 	}

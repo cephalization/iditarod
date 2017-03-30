@@ -103,7 +103,7 @@ class Course extends Component {
 			);
 		}
 		const courseItem = (
-			<li key={keyName} className="information-panel panel-sm">
+			<li key={keyName} className="information-panel course-panel col s12 m6 l4">
 				<div className="collapsible-header">
 					{course.prettyClassNum}
 					<br />
@@ -149,10 +149,8 @@ class Course extends Component {
 			<div>
 				<div className="row">
 					<div className="col s12 m6 l6">
-						<h4>Course List</h4>
-						<label>Department
-							{this.retrieveCourses}
-							<select id="deptChoice" className="browser-default custom-select" defaultValue="0" onChange={this.retrieveDept} value={this.state.value}>
+						<h5 className="col s5">Course List</h5>
+							<select id="deptChoice" className="browser-default custom-select col s7" defaultValue="0" onChange={this.retrieveDept} value={this.state.value}>
 								<option value="0" disabled>Choose your department</option>
 								<option value="ACC">Accounting (ACC)</option>
 								<option value="AF">Air Force ROTC (AF)</option>
@@ -200,12 +198,12 @@ class Course extends Component {
 								<option value="UN">University Wide (UN)</option>
 								<option value="FA">Visual & Performing Arts (FA)</option>
 							</select>
-							<p></p>
 							<p>{this.state.value}</p>
-						</label>
 						<ul className="property-list collapsible" data-collapsible="accordion">
 							{this.state.courses}
 						</ul>
+					</div>
+					<div className="col s12 m6 l6">
 					</div>
 				</div>
 			</div>
