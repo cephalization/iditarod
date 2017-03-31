@@ -30,7 +30,7 @@ class Course extends Component {
 		this.state.setState({courses: []});
 	}
 
-	renderDept(course, keyName, taken, dept) {
+	renderDept(course, keyName, dept, taken) {
 		let courseActions;
 		if (taken) {
 			courseActions = (
@@ -62,11 +62,13 @@ class Course extends Component {
 				</div>
 			</li>
 		);
-		if(course.department === 'CS')
+		if(course.department === dept)
 			return courseItem;
 	}
 
-	retrieveDept() {
+	retrieveDept(e) {
+		let dept = e.target.value;
+		this.setState({dept});
 		// Make modifications to an object referring the class's 'this'
 		let coursesRef = this;
 		// Fetch the data from firebase
@@ -77,7 +79,7 @@ class Course extends Component {
 				if (response.courses.hasOwnProperty(course)) {
 					const courseObject = response.courses[course];
 					courses.push(
-						coursesRef.renderDept(courseObject, course)
+						coursesRef.renderDept(courseObject, course, dept)
 					);
 				}
 			}
