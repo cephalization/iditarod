@@ -15,6 +15,7 @@ class Dashboard extends Component {
 		this.renderCourse = this.renderCourse.bind(this);
 		this.renderCourseHistory = this.renderCourseHistory.bind(this);
 		this.retrieveUserSpace = this.retrieveUserSpace.bind(this);
+		this.updatePieChart = this.updatePieChart.bind(this);
 
 		this.state = {
 			courseHistory: [],
@@ -30,7 +31,7 @@ class Dashboard extends Component {
 				],
 				datasets:[
 					{
-						data: [56,132],
+						data: [56,76],
 						backgroundColor:[
 							'#0ef729',
 							'#f92020'
@@ -152,6 +153,10 @@ class Dashboard extends Component {
 			);
 			return notExists;
 		}
+	}
+
+	updatePieChart(){
+		
 	}
 
 	render() {
