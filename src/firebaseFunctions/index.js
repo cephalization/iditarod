@@ -12,7 +12,20 @@ const database = Firebase.database();
 //Utility Functions
 export function signInUser(googleToken){
 	let cred = Firebase.auth.GoogleAuthProvider.credential(googleToken);
-	return Firebase.auth().signInWithCredential(cred);
+	let user = Firebase.auth().signInWithCredential(cred);
+	//Check if this is the first sign in (if this user directory exists)
+	database.ref('Users').once('value', function(snapshot){
+		let curUser = Firebase.auth().currentUser.uid;
+		console.log('checked if user ' + curUser + ' existed.');
+		if(!snapshot.hasChild(curUser)){
+			database.ref('Users/' + curUser).set({'Audits':{initialized:false},
+				'Courses':{initialized:false}});
+
+			console.log('User doesn\'t exist, adding.');
+		}
+	});
+
+	return user;
 }
 
 export function getCurrentUser(){
@@ -34,6 +47,19 @@ export function allCourses(callback){
 	courses.once('value', function (snapshot) {
 		callback({
 			'courses': snapshot.val()
+		});
+	});
+}
+
+export function userSpace(cookie, callback){
+	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
+	Firebase.auth().signInWithCredential(cred).then(function(user) {
+		const uid = user.uid;
+		let userCourses = database.ref('Users/' + uid);
+		userCourses.once('value', function(snapshot){
+			callback({
+				'userSpace': snapshot.val()
+			});
 		});
 	});
 }

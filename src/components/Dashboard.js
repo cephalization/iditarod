@@ -1,12 +1,157 @@
 import React, {Component} from 'react';
+import * as FirebaseActions from '../firebaseFunctions';
+import cookie from 'react-cookie';
+import {Pie} from 'react-chartjs-2';
 
 class Dashboard extends Component {
 
+	constructor() {
+		super();
+
+		this.retrieveAuditHistory = this.retrieveAuditHistory.bind(this);
+		this.renderAudit = this.renderAudit.bind(this);
+		this.renderAuditHistory = this.renderAuditHistory.bind(this);
+		this.retrieveCourseHistory = this.retrieveCourseHistory.bind(this);
+		this.renderCourse = this.renderCourse.bind(this);
+		this.renderCourseHistory = this.renderCourseHistory.bind(this);
+		this.retrieveUserSpace = this.retrieveUserSpace.bind(this);
+
+		this.state = {
+			courseHistory: [],
+			courses: [],
+			courseInitialized: true,
+			auditHistory: [],
+			audits: [],
+			auditInitialized: true,
+			chartData:{
+				labels:[
+					'Completed',
+					'Uncompleted'
+				],
+				datasets:[
+					{
+						data: [56,132],
+						backgroundColor:[
+							'#0ef729',
+							'#f92020'
+						],
+						hoverBackgroundColor:[
+							'#0ef729',
+							'#f92020'
+						]
+					}
+				]
+			},
+			chartOptions:{
+				mantainAspectRatio: false
+			}
+		};
+	}
+
 	componentDidMount(){
-		console.log(this);
 		const props = this.props;
 		//if we're not signed in, then we need to re-auth, or redirect to the login page.
 		props.checkAuth('Dashboard');
+		this.retrieveUserSpace();
+	}
+
+	retrieveUserSpace() {
+		let outerThis = this;
+		FirebaseActions.userSpace(cookie.load('TOKEN'), function(response){
+			let userSpace = response.userSpace;
+			if (userSpace.Courses.initialized) {
+				let courseList = [];
+				let courses = response.userSpace.Courses;
+				for (let course in courses) {
+					if (courses.hasOwnProperty(course) && course !== 'initialized') {
+						courseList.push(courses[course]);
+					}
+				}
+				outerThis.setState({
+					courses: courseList,
+				});
+				outerThis.retrieveCourseHistory();
+			} else {
+				outerThis.setState({
+					courseInitialized: userSpace.Courses.initialized
+				});
+			}
+			if (userSpace.Audits.initialized) {
+				let auditsList = [];
+				let audits = response.userSpace.Audits;
+				for (let audit in audits) {
+					if (audits.hasOwnProperty(audit) && audit !== 'initialized') {
+						auditsList.push(audits[audit]);
+					}
+				}
+				outerThis.setState({
+					audits: auditsList,
+				});
+				outerThis.retrieveAuditHistory();
+			} else {
+				outerThis.setState({
+					auditInitialized: response.userSpace.Audits.initialized
+				});
+			}
+		});
+	}
+
+	retrieveAuditHistory() {
+
+	}
+
+	renderAudit() {
+
+	}
+
+	renderAuditHistory() {
+
+	}
+
+	retrieveCourseHistory() {
+		if (this.state.courseInitialized) {
+			let courseList = [];
+			let maxHist = 3;
+			let hist = 0;
+			for (let course in this.state.courses) {
+				if (this.state.courses.hasOwnProperty(course) && hist < maxHist) {
+					courseList.push(this.renderCourse(this.state.courses[course]));
+					hist ++;
+				}
+				this.setState({
+					courseHistory: courseList,
+				});
+			}
+		}
+	}
+
+	renderCourse(course) {
+		const courseInfo = (
+			<li key={course.num}>{course.name}</li>
+		);
+		return courseInfo;
+	}
+
+	renderCourseHistory() {
+		if (this.state.courseInitialized) {
+			const exists = (
+				<div className="content-section">
+					<p>Your most recent courses</p>
+					<ul>
+						{this.state.courseHistory.length ? this.state.courseHistory : '...' }
+					</ul>
+				</div>
+			);
+			return exists;
+		} else {
+			const notExists = (
+				<div className="content-section">
+					<p>You have not taken any courses yet!</p>
+					<a className="btn" href="/courses">Add Courses</a>
+				</div>
+			);
+			return notExists;
+		}
 	}
 
 	render() {
@@ -15,25 +160,28 @@ class Dashboard extends Component {
 				<div>
 					<div className="row center-align">
 						<div className="col l8 m8 s12">
-							<div className="information-panel panel-lg">
+							<div className="information-panel">
 								<h2>Overall Degree Completion</h2>
 								<p>IF degree not selected, offer selection of degrees</p>
 								<p>ELSE show a chart.js chart offering an overall percentage of completion</p>
+								<div className="row center-align">
+									<div className="col l6 offset-l3 m10 offset-m1">
+										<Pie data={this.state.chartData} options={this.state.chartOptions} width={100} height={100}/>
+									</div>
+								</div>
 							</div>
 						</div>
 						<div className="col l4 m4 s12">
 							<div className="col l12 m12 s12">
 								<div className="information-panel panel-sm">
 									<h3>Courses</h3>
-									<p>IF courses have not been added, show link to add courses</p>
-									<p>ELSE show most recent courses added</p>
+									{this.renderCourseHistory()}
 								</div>
 							</div>
 							<div className="col l12 m12 s12">
 								<div className="information-panel panel-sm">
 									<h3>Audits</h3>
-									<p>IF audit has not been run, show link to run degree audit</p>
-									<p>ELSE audit has been run, show link to view audit</p>
+									{this.state.auditHistory}
 								</div>
 							</div>
 						</div>
