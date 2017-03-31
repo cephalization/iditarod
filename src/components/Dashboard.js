@@ -105,7 +105,25 @@ class Dashboard extends Component {
 	}
 
 	renderAuditHistory() {
-
+		if (this.state.auditInitialized) {
+			const exists = (
+				<div className="content-section">
+					<p>Your most recent audit</p>
+					<ul>
+						{this.state.courseHistory.length ? this.state.courseHistory : '...' }
+					</ul>
+				</div>
+			);
+			return exists;
+		} else {
+			const notExists = (
+				<div className="content-section">
+					<p>You have not run any audits yet!</p>
+					<a className="btn" href="/audits">Run Audit</a>
+				</div>
+			);
+			return notExists;
+		}
 	}
 
 	retrieveCourseHistory() {
@@ -162,8 +180,6 @@ class Dashboard extends Component {
 						<div className="col l8 m8 s12">
 							<div className="information-panel">
 								<h2>Overall Degree Completion</h2>
-								<p>IF degree not selected, offer selection of degrees</p>
-								<p>ELSE show a chart.js chart offering an overall percentage of completion</p>
 								<div className="row center-align">
 									<div className="col l6 offset-l3 m10 offset-m1">
 										<Pie data={this.state.chartData} options={this.state.chartOptions} width={100} height={100}/>
@@ -181,7 +197,7 @@ class Dashboard extends Component {
 							<div className="col l12 m12 s12">
 								<div className="information-panel panel-sm">
 									<h3>Audits</h3>
-									{this.state.auditHistory}
+									{this.renderAuditHistory()}
 								</div>
 							</div>
 						</div>

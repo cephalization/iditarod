@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import * as FirebaseActions from '../firebaseFunctions';
+import UserCourses from './UserCourses';
+import cookie from 'react-cookie';
 import './style/Courses.css';
 
 class Course extends Component {
@@ -11,10 +13,10 @@ class Course extends Component {
 		// Bind every class function to 'this'
 		this.retrieveCourses = this.retrieveCourses.bind(this);
 		this.renderCourse = this.renderCourse.bind(this);
-		this.renderDept = this.renderDept.bind(this);
-		this.retrieveDept = this.retrieveDept.bind(this);
+		this.filterCourses = this.filterCourses.bind(this);
+		this.addUserCourse = this.addUserCourse.bind(this);
 		//Set up our state
-		this.state = {courses: []};
+		this.state = {courses: [], rawCourses: []};
 	}
 
 	componentDidMount(){
@@ -30,60 +32,22 @@ class Course extends Component {
 		this.state.setState({courses: []});
 	}
 
-	renderDept(course, keyName, taken, dept) {
-		let courseActions;
-		if (taken) {
-			courseActions = (
-				<div>
-					<button className="btn waves-effect waves-light">Remove from Courses</button>
-				</div>
-			);
-		} else {
-			courseActions = (
-				<div>
-					<button className="btn waves-effect waves-light">Add to Courses</button>
-				</div>
-			);
-		}
-		const courseItem = (
-			<li key={keyName} className="information-panel panel-sm">
-				<div className="collapsible-header">
-					{course.prettyClassNum}
-					<br />
-					{course.name}
-				</div>
-				<div className="collapsible-body">
-					<span>
-						{course.credits} credit(s)
-						<br />
-						Available {course.semesters}
-					</span>
-					{courseActions}
-				</div>
-			</li>
-		);
-		if(course.department === 'CS')
-			return courseItem;
-	}
-
-	retrieveDept() {
-		// Make modifications to an object referring the class's 'this'
-		let coursesRef = this;
-		// Fetch the data from firebase
-		FirebaseActions.allCourses(function (response) {
-			let courses = [];
-			console.log('All courses in dept are', response.courses);
-			for (let course in response.courses) {
-				if (response.courses.hasOwnProperty(course)) {
-					const courseObject = response.courses[course];
-					courses.push(
-						coursesRef.renderDept(courseObject, course)
-					);
+	// This can be optimized a lot, but it works for now
+	// What we could do instead of re-rendering every course, trim the key attatched to each
+	// course in this.state.courses, check that against department
+	filterCourses(department) {
+		department = department.target.value;
+		let filteredCourses = [];
+		let unFilteredCourses = this.state.rawCourses;
+		if (unFilteredCourses.length > 0) {
+			for (let i = 0; i < unFilteredCourses.length; i++) {
+				if (unFilteredCourses[i].department === department) {
+					filteredCourses.push(this.renderCourse(unFilteredCourses[i], unFilteredCourses[i].prettyClassNum));
 				}
 			}
-			coursesRef.setState({
-				courses: courses
-			});
+		}
+		this.setState({
+			courses: filteredCourses
 		});
 	}
 
@@ -98,12 +62,12 @@ class Course extends Component {
 		} else {
 			courseActions = (
 				<div>
-					<button className="btn waves-effect waves-light">Add to Courses</button>
+					<button className="btn waves-effect waves-light" onClick={() => this.addUserCourse(course)}>Add to Courses</button>
 				</div>
 			);
 		}
 		const courseItem = (
-			<li key={keyName} className="information-panel course-panel col s12 m6 l4">
+			<li key={keyName} className="information-panel panel-sm">
 				<div className="collapsible-header">
 					{course.prettyClassNum}
 					<br />
@@ -111,7 +75,7 @@ class Course extends Component {
 				</div>
 				<div className="collapsible-body">
 					<span>
-						{course.credits} credit(s)
+						Credits: {course.credits}
 						<br />
 						Available {course.semesters}
 					</span>
@@ -122,12 +86,19 @@ class Course extends Component {
 		return courseItem;
 	}
 
+	addUserCourse(course) {
+		console.log('Adding', course, 'to user!');
+		let google = cookie.load('TOKEN');
+		FirebaseActions.addUserCourse(google, course);
+	}
+
 	retrieveCourses() {
 		// Make modifications to an object referring the class's 'this'
 		let coursesRef = this;
 		// Fetch the data from firebase
 		FirebaseActions.allCourses(function (response) {
 			let courses = [];
+			let rawCourses = [];
 			console.log('All courses are', response.courses);
 			for (let course in response.courses) {
 				if (response.courses.hasOwnProperty(course)) {
@@ -135,10 +106,14 @@ class Course extends Component {
 					courses.push(
 						coursesRef.renderCourse(courseObject, course)
 					);
+					rawCourses.push(
+						response.courses[course]
+					);
 				}
 			}
 			coursesRef.setState({
-				courses: courses
+				courses: courses,
+				rawCourses: rawCourses
 			});
 		});
 	}
@@ -150,7 +125,7 @@ class Course extends Component {
 				<div className="row">
 					<div className="col s12 m6 l6">
 						<h5 className="col s5">Course List</h5>
-							<select id="deptChoice" className="browser-default custom-select col s7" defaultValue="0" onChange={this.retrieveDept} value={this.state.value}>
+							<select id="deptChoice" className="browser-default custom-select col s7" defaultValue="0" onChange={(e) => {this.filterCourses(e);}}>
 								<option value="0" disabled>Choose your department</option>
 								<option value="ACC">Accounting (ACC)</option>
 								<option value="AF">Air Force ROTC (AF)</option>
@@ -203,8 +178,7 @@ class Course extends Component {
 							{this.state.courses}
 						</ul>
 					</div>
-					<div className="col s12 m6 l6">
-					</div>
+					<UserCourses />
 				</div>
 			</div>
 		);

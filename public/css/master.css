@@ -78,6 +78,16 @@ h2 {
 	width: 100%;
 }
 
+.property-list {
+	min-height: calc(100vh - 150px);
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .panel-lg {
 	min-height: 120px;
 	max-height: 400px;

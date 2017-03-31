@@ -5,78 +5,113 @@ import './style/Courses.css';
 
 class UserCourses extends Component {
 
-  constructor() {
+	constructor() {
     // Required function call for every constructor
-    super();
+		super();
 
     // Bind every class function to 'this'
-    this.retrieveCourses = this.retrieveCourses.bind(this);
-    this.renderCourse = this.renderCourse.bind(this);
+		this.retrieveCourses = this.retrieveCourses.bind(this);
+		this.renderCourse = this.renderCourse.bind(this);
     //Set up our state
-    this.state = {
-      userCourses: []
-    };
-  }
+		this.state = {
+			userCourses: [],
+			courseInitialized: true
+		};
+	}
 
-  renderCourse(course, keyName, taken) {
-    let courseActions;
+	componentDidMount() {
+		this.retrieveCourses();
+	}
 
-    const courseItem = (
-      <li key={keyName} className="information-panel panel-sm">
-        <div className="collapsible-header">
-          {course.prettyClassNum}
-          <br />
-          {course.name}
-        </div>
-        <div className="collapsible-body">
-          <span>
-            {course.credits} credit(s)
-            <br />
-            Available {course.semesters}
-          </span>
-          {courseActions}
-        </div>
-      </li>
-    );
-    return courseItem;
-  }
+	renderCourse(course, keyName, taken) {
+		let courseActions;
+		if (taken) {
+			courseActions = (
+				<div>
+					<button className="btn waves-effect waves-light">Remove from Courses</button>
+				</div>
+			);
+		} else {
+			courseActions = (
+				<div>
+					<button className="btn waves-effect waves-light">Add to Courses</button>
+				</div>
+			);
+		}
+		const courseItem = (
+			<li key={keyName} className="information-panel panel-sm">
+				<div className="collapsible-header">
+					{course.prettyClassNum}
+					<br />
+					{course.name}
+				</div>
+				<div className="collapsible-body">
+					<span>
+						Credits: {course.credits}
+						<br />
+						Available {course.semesters}
+					</span>
+					{courseActions}
+				</div>
+			</li>
+		);
+		return courseItem;
+	}
 
-  retrieveCourses() {
+	retrieveCourses() {
     // Make modifications to an object referring the class's 'this'
-    let coursesRef = this;
+		let coursesRef = this;
     // Fetch the data from firebase
-    FirebaseActions.userSpace(cookie.load('TOKEN'), function (response) {
-      let userCourses = [];
-      console.log("User's courses are:", response.userCourses);
-      for (let course in response.userCourses) {
-        if (response.userCourses.hasOwnProperty(course)) {
-          const courseObject = response.userCourses[course];
-          userCourses.push(
-            coursesRef.renderCourse(courseObject, course)
-          );
-        }
-      }
-      coursesRef.setState({
-        userSpace: userCourses
-      });
-    });
-  }
+		FirebaseActions.userSpace(cookie.load('TOKEN'), function (response) {
+			let userCourses = [];
+			console.log('User\'s courses are:', response.userSpace.Courses);
+			if (response.userSpace.Courses.initialized) {
+				for (let course in response.userSpace.Courses) {
+					if (response.userSpace.Courses.hasOwnProperty(course) && course !== 'initialized') {
+						const courseObject = response.userSpace.Courses[course];
+						userCourses.push(
+							coursesRef.renderCourse(courseObject, course, true)
+						);
+					}
+				}
+				coursesRef.setState({
+					userCourses: userCourses
+				});
+			} else {
+				coursesRef.setState({
+					courseInitialized: false
+				});
+			}
+		});
+	}
 
-  render() {
-    return (
-      <div>
-        <div className="row">
-          <div className="col s12 m6 l6">
-            <h4>My Courses</h4>
-            {this.retrieveCourses}
-            <ul className="property-list collapsible" data-collapsible="accordion">
-              {this.state.userCourses}
-            </ul>
-          </div>
-        </div>
+	renderUserCourses() {
+		if (this.state.courseInitialized) {
+			const exists = this.state.userCourses.length ? this.state.userCourses : '...' ;
+			return exists;
+		} else {
+			const notExists = (
+				<li>
+					<div>
+						<p>You have not taken any courses yet.</p>
+						<p>Add some with the tool on this page!</p>
+					</div>
+				</li>
+			);
+			return notExists;
+		}
+	}
+
+	render() {
+		return (
+      <div className="col s12 m6 l6">
+        <h5>My Courses</h5>
+        <ul className="property-list collapsible" data-collapsible="accordion">
+          {this.renderUserCourses()}
+        </ul>
       </div>
-    );
-  }
+		);
+	}
 
 }
 
