@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import * as FirebaseActions from '../firebaseFunctions';
 import cookie from 'react-cookie';
+import {Pie} from 'react-chartjs-2';
 
 class Dashboard extends Component {
 
@@ -21,7 +22,29 @@ class Dashboard extends Component {
 			courseInitialized: true,
 			auditHistory: [],
 			audits: [],
-			auditInitialized: true
+			auditInitialized: true,
+			chartData:{
+				labels:[
+					'Completed',
+					'Uncompleted'
+				],
+				datasets:[
+					{
+						data: [56,132],
+						backgroundColor:[
+							'#0ef729',
+							'#f92020'
+						],
+						hoverBackgroundColor:[
+							'#0ef729',
+							'#f92020'
+						]
+					}
+				]
+			},
+			chartOptions:{
+				mantainAspectRatio: false
+			}
 		};
 	}
 
@@ -137,10 +160,15 @@ class Dashboard extends Component {
 				<div>
 					<div className="row center-align">
 						<div className="col l8 m8 s12">
-							<div className="information-panel panel-lg">
+							<div className="information-panel">
 								<h2>Overall Degree Completion</h2>
 								<p>IF degree not selected, offer selection of degrees</p>
 								<p>ELSE show a chart.js chart offering an overall percentage of completion</p>
+								<div className="row center-align">
+									<div className="col l6 offset-l3 m10 offset-m1">
+										<Pie data={this.state.chartData} options={this.state.chartOptions} width={100} height={100}/>
+									</div>
+								</div>
 							</div>
 						</div>
 						<div className="col l4 m4 s12">
