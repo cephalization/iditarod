@@ -64,7 +64,7 @@ export function userSpace(cookie, callback){
 	});
 }
 
-export function addUserCourse(cookie, course) {
+export function addUserCourse(cookie, course, callback) {
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {
 		let uid = user.uid;
@@ -77,6 +77,35 @@ export function addUserCourse(cookie, course) {
 				let temp = {};
 				temp[course.slugName] = course;
 				database.ref('Users/' + uid + '/Courses/').update(temp);
+				callback({
+					Successful: true
+				});
+			} else {
+				callback({
+					Successful: false
+				});
+			}
+		});
+	});
+}
+
+export function removeUserCourse(cookie, course, callback) {
+	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
+	Firebase.auth().signInWithCredential(cred).then(function(user) {
+		let uid = user.uid;
+		database.ref('Users/' + uid + '/Courses').once('value', function(snapshot){
+			if (snapshot.hasChild(course.slugName)) {
+				database.ref('Users/' + uid + '/Courses/' + course.slugName).remove();
+				if (snapshot.val().initialized && snapshot.numChildren() === 1) {
+					database.ref('Users/' + uid + '/Courses/').set({initialized: false});
+				}
+				callback({
+					Successful: true
+				});
+			} else {
+				callback({
+					Successful: false
+				});
 			}
 		});
 	});

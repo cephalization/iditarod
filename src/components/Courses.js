@@ -15,8 +15,14 @@ class Course extends Component {
 		this.renderCourse = this.renderCourse.bind(this);
 		this.filterCourses = this.filterCourses.bind(this);
 		this.addUserCourse = this.addUserCourse.bind(this);
+		this.removeUserCourse = this.removeUserCourse.bind(this);
+		this.retrieveUserCourses = this.retrieveUserCourses.bind(this);
 		//Set up our state
-		this.state = {courses: [], rawCourses: []};
+		this.state = {
+			courses: [],
+			rawCourses: [],
+			userCourses: [],
+			userCoursesInitialized: true};
 	}
 
 	componentDidMount(){
@@ -26,6 +32,7 @@ class Course extends Component {
 		window.$('select').material_select();
 		//Async call to retrieve courses
 		this.retrieveCourses();
+		this.retrieveUserCourses();
 	}
 
 	componentWillUnmount() {
@@ -51,12 +58,39 @@ class Course extends Component {
 		});
 	}
 
+	retrieveUserCourses() {
+    // Make modifications to an object referring the class's 'this'
+		let coursesRef = this;
+    // Fetch the data from firebase
+		FirebaseActions.userSpace(cookie.load('TOKEN'), function (response) {
+			let userCourses = [];
+			if (response.userSpace.Courses.initialized) {
+				for (let course in response.userSpace.Courses) {
+					if (response.userSpace.Courses.hasOwnProperty(course) && course !== 'initialized') {
+						const courseObject = response.userSpace.Courses[course];
+						userCourses.push(
+							coursesRef.renderCourse(courseObject, course, true)
+						);
+					}
+				}
+				coursesRef.setState({
+					userCourses: userCourses,
+					userCoursesInitialized: true
+				});
+			} else {
+				coursesRef.setState({
+					userCoursesInitialized: false
+				});
+			}
+		});
+	}
+
 	renderCourse(course, keyName, taken) {
 		let courseActions;
 		if (taken) {
 			courseActions = (
 				<div>
-					<button className="btn waves-effect waves-light">Remove from Courses</button>
+					<button className="btn waves-effect waves-light" onClick={() => this.removeUserCourse(course)}>Remove from Courses</button>
 				</div>
 			);
 		} else {
@@ -87,9 +121,32 @@ class Course extends Component {
 	}
 
 	addUserCourse(course) {
-		console.log('Adding', course, 'to user!');
 		let google = cookie.load('TOKEN');
-		FirebaseActions.addUserCourse(google, course);
+		let coursesRef = this;
+		FirebaseActions.addUserCourse(google, course, function (response) {
+			if (response.Successful) {
+				coursesRef.retrieveUserCourses();
+			}
+		});
+	}
+
+	removeUserCourse(course) {
+		let google = cookie.load('TOKEN');
+		let coursesRef = this;
+		FirebaseActions.removeUserCourse(google, course, function(response) {
+			if (response.Successful) {
+				let uCourses = coursesRef.state.userCourses;
+				for (let i = 0; i < uCourses.length; i++) {
+					if (uCourses[i].key === course.slugName) {
+						uCourses.splice(i, 1);
+						break;
+					}
+				}
+				coursesRef.setState({
+					userCourses: uCourses
+				});
+			}
+		});
 	}
 
 	retrieveCourses() {
@@ -99,7 +156,6 @@ class Course extends Component {
 		FirebaseActions.allCourses(function (response) {
 			let courses = [];
 			let rawCourses = [];
-			console.log('All courses are', response.courses);
 			for (let course in response.courses) {
 				if (response.courses.hasOwnProperty(course)) {
 					const courseObject = response.courses[course];
@@ -178,7 +234,7 @@ class Course extends Component {
 							{this.state.courses}
 						</ul>
 					</div>
-					<UserCourses />
+					<UserCourses courses={this.state.userCourses} initialized={this.state.userCoursesInitialized} removeCourse={this.removeUserCourse}/>
 				</div>
 			</div>
 		);

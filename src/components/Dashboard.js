@@ -146,7 +146,7 @@ class Dashboard extends Component {
 
 	renderCourse(course) {
 		const courseInfo = (
-			<li key={course.num}>{course.name}</li>
+			<li key={course.slugName}>{course.name}</li>
 		);
 		return courseInfo;
 	}
@@ -174,7 +174,7 @@ class Dashboard extends Component {
 	}
 
 	updatePieChart(){
-		
+
 	}
 
 	render() {
