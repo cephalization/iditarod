@@ -63,3 +63,21 @@ export function userSpace(cookie, callback){
 		});
 	});
 }
+
+export function addUserCourse(cookie, course) {
+	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
+	Firebase.auth().signInWithCredential(cred).then(function(user) {
+		let uid = user.uid;
+		console.log('Users/' + uid + '/Courses/');
+		database.ref('Users/' + uid + '/Courses').once('value', function(snapshot){
+			if (!snapshot.val().initialized) {
+				database.ref('Users/' + uid + '/Courses/').set({initialized: true});
+			}
+			if (!snapshot.hasChild(course.slugName)) {
+				let temp = {};
+				temp[course.slugName] = course;
+				database.ref('Users/' + uid + '/Courses/').update(temp);
+			}
+		});
+	});
+}
