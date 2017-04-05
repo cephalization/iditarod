@@ -34,8 +34,7 @@ class Course extends Component {
 		window.$('.collapsible').collapsible();
 		window.$('select').material_select();
 		//Async call to retrieve courses
-		this.retrieveUserCourses();
-		this.retrieveCourses();
+		this.retrieveUserCourses().then(this.retrieveCourses);
 	}
 
 	componentWillUnmount() {
@@ -63,34 +62,37 @@ class Course extends Component {
 	}
 
 	retrieveUserCourses() {
-    // Make modifications to an object referring the class's 'this'
+		// Make modifications to an object referring the class's 'this'
 		let coursesRef = this;
-    // Fetch the data from firebase
-		FirebaseActions.userSpace(cookie.load('TOKEN'), function (response) {
-			let userCourses = [];
-			let rawUserCourses = [];
-			if (response.userSpace.Courses.initialized) {
-				for (let course in response.userSpace.Courses) {
-					if (response.userSpace.Courses.hasOwnProperty(course) && course !== 'initialized') {
-						const courseObject = response.userSpace.Courses[course];
-						userCourses.push(
-							coursesRef.renderCourse(courseObject, course, true)
-						);
-						rawUserCourses.push(
-							courseObject
-						);
+		return new Promise(function(resolve){
+			// Fetch the data from firebase
+			FirebaseActions.userSpace(cookie.load('TOKEN'), function (response) {
+				let userCourses = [];
+				let rawUserCourses = [];
+				if (response.userSpace.Courses.initialized) {
+					for (let course in response.userSpace.Courses) {
+						if (response.userSpace.Courses.hasOwnProperty(course) && course !== 'initialized') {
+							const courseObject = response.userSpace.Courses[course];
+							userCourses.push(
+								coursesRef.renderCourse(courseObject, course, true)
+							);
+							rawUserCourses.push(
+								courseObject
+							);
+						}
 					}
+					coursesRef.setState({
+						userCourses: userCourses,
+						rawUserCourses: rawUserCourses,
+						userCoursesInitialized: true
+					});
+				} else {
+					coursesRef.setState({
+						userCoursesInitialized: false
+					});
 				}
-				coursesRef.setState({
-					userCourses: userCourses,
-					rawUserCourses: rawUserCourses,
-					userCoursesInitialized: true
-				});
-			} else {
-				coursesRef.setState({
-					userCoursesInitialized: false
-				});
-			}
+				resolve('resolved');
+			});
 		});
 	}
 
@@ -207,12 +209,13 @@ class Course extends Component {
 		FirebaseActions.allCourses(function (response) {
 			let courses = [];
 			let rawCourses = [];
+			console.log(coursesRef.state.rawUserCourses);
 			for (let course in response.courses) {
 				if (response.courses.hasOwnProperty(course)) {
 					const courseObject = response.courses[course];
 					//Only add the course to the course list to be displayed if it isn't a user course.
 					if(
-						coursesRef.state.rawUserCourses.find((element)=>(courseObject.slugName===element.slugName))===undefined
+						typeof coursesRef.state.rawUserCourses.find((element)=>(courseObject.slugName===element.slugName)) === 'undefined'
 					){
 						courses.push(
 							coursesRef.renderCourse(courseObject, course)
