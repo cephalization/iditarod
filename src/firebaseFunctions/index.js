@@ -20,7 +20,6 @@ export function signInUser(googleToken){
 		if(!snapshot.hasChild(curUser)){
 			database.ref('Users/' + curUser).set({'Audits':{initialized:false},
 				'Courses':{initialized:false}});
-
 			console.log('User doesn\'t exist, adding.');
 		}
 	});
@@ -77,6 +76,7 @@ export function addUserCourse(cookie, course, callback) {
 				let temp = {};
 				temp[course.slugName] = course;
 				database.ref('Users/' + uid + '/Courses/').update(temp);
+				addCredits(parseInt(course.credits, 10), uid);
 				callback({
 					Successful: true
 				});
@@ -99,6 +99,7 @@ export function removeUserCourse(cookie, course, callback) {
 				if (snapshot.val().initialized && snapshot.numChildren() === 1) {
 					database.ref('Users/' + uid + '/Courses/').set({initialized: false});
 				}
+				addCredits(-parseInt(course.credits, 10), uid);
 				callback({
 					Successful: true
 				});
@@ -109,4 +110,16 @@ export function removeUserCourse(cookie, course, callback) {
 			}
 		});
 	});
+}
+
+function addCredits(val, uid){
+	database.ref('Users/' + uid).once('value', function(snapshot){
+		let numCreds = 0;
+		if (snapshot.hasChild('totalCredits')){
+			numCreds = snapshot.child('totalCredits').val();
+		}
+		numCreds+=val;
+		database.ref('Users/' + uid + '/totalCredits').set(numCreds);
+	});
+
 }
