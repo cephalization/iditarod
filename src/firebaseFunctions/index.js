@@ -96,7 +96,8 @@ export function removeUserCourse(cookie, course, callback) {
 		database.ref('Users/' + uid + '/Courses').once('value', function(snapshot){
 			if (snapshot.hasChild(course.slugName)) {
 				database.ref('Users/' + uid + '/Courses/' + course.slugName).remove();
-				if (snapshot.val().initialized && snapshot.numChildren() === 1) {
+				console.log('initalized?: ' + snapshot.val().initialized + ' | numChildren = ' + snapshot.numChildren());
+				if (snapshot.val().initialized && snapshot.numChildren() <= 2) {
 					database.ref('Users/' + uid + '/Courses/').set({initialized: false});
 				}
 				addCredits(-parseInt(course.credits, 10), uid);
