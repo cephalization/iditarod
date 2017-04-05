@@ -96,7 +96,7 @@ export function removeUserCourse(cookie, course, callback) {
 		database.ref('Users/' + uid + '/Courses').once('value', function(snapshot){
 			if (snapshot.hasChild(course.slugName)) {
 				database.ref('Users/' + uid + '/Courses/' + course.slugName).remove();
-				if (snapshot.val().initialized && snapshot.numChildren() === 1) {
+				if (snapshot.numChildren() === 1) {
 					database.ref('Users/' + uid + '/Courses/').set({initialized: false});
 				}
 				callback({
