@@ -93,16 +93,19 @@ export function removeUserCourse(cookie, course, callback) {
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {
 		let uid = user.uid;
+		let stillInitialized = true;
 		database.ref('Users/' + uid + '/Courses').once('value', function(snapshot){
 			if (snapshot.hasChild(course.slugName)) {
 				database.ref('Users/' + uid + '/Courses/' + course.slugName).remove();
 				console.log('initalized?: ' + snapshot.val().initialized + ' | numChildren = ' + snapshot.numChildren());
 				if (snapshot.val().initialized && snapshot.numChildren() <= 2) {
 					database.ref('Users/' + uid + '/Courses/').set({initialized: false});
+					stillInitialized = false;
 				}
 				addCredits(-parseInt(course.credits, 10), uid);
 				callback({
-					Successful: true
+					Successful: true,
+					stillInitialized: stillInitialized
 				});
 			} else {
 				callback({

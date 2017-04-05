@@ -163,9 +163,12 @@ class Course extends Component {
 		let coursesRef = this;
 		let courses = this.state.courses;
 		let rawCourses = this.state.rawCourses;
+		let stillInitialized = true;
+
 		FirebaseActions.removeUserCourse(google, course, function(response) {
 			if (response.Successful) {
 				let uCourses = coursesRef.state.userCourses;
+				stillInitialized = response.stillInitialized;
 				for (let i = 0; i < uCourses.length; i++) {
 					if (uCourses[i].key === course.slugName) {
 						uCourses.splice(i, 1);
@@ -200,6 +203,7 @@ class Course extends Component {
 				}
 				coursesRef.setState({
 					userCourses: uCourses,
+					userCoursesInitialized: stillInitialized
 				});
 			}
 		});
