@@ -51,7 +51,7 @@ class Course extends Component {
 		if (unFilteredCourses.length > 0) {
 			for (let i = 0; i < unFilteredCourses.length; i++) {
 				if (unFilteredCourses[i].department === department) {
-					filteredCourses.push(this.renderCourse(unFilteredCourses[i], unFilteredCourses[i].prettyClassNum));
+					filteredCourses.push(this.renderCourse(unFilteredCourses[i], unFilteredCourses[i].slugName));
 				}
 			}
 		}
@@ -74,7 +74,7 @@ class Course extends Component {
 						if (response.userSpace.Courses.hasOwnProperty(course) && course !== 'initialized') {
 							const courseObject = response.userSpace.Courses[course];
 							userCourses.push(
-								coursesRef.renderCourse(courseObject, course, true)
+								coursesRef.renderCourse(courseObject, courseObject.slugName, true)
 							);
 							rawUserCourses.push(
 								courseObject
@@ -141,6 +141,9 @@ class Course extends Component {
 			//remove from courses.
 			let courses = coursesRef.state.courses;
 			let rawCourses = coursesRef.state.rawCourses;
+			if(0>courses.findIndex((element)=>(element.key===course.slugName))){
+				console.log(courses);
+			}
 			courses.splice(
 				courses.findIndex((element)=>(element.key===course.slugName)),1
 			);
@@ -182,7 +185,7 @@ class Course extends Component {
 					return 0;
 				});
 				//add to the displayed courses list, only if the depatment is correct
-				if(coursesRef.state.curDept==='' ||course.slugName.startsWith(coursesRef.state.curDept)){
+				if(coursesRef.state.curDept===''||course.slugName.startsWith(coursesRef.state.curDept)){
 					courses.push(coursesRef.renderCourse(course, course.slugName));
 					//sort courses by key
 					courses.sort(function(a,b){
@@ -205,8 +208,8 @@ class Course extends Component {
 	retrieveCourses() {
 		// Make modifications to an object referring the class's 'this'
 		let coursesRef = this;
-		// Fetch the data from firebase
 		FirebaseActions.allCourses(function (response) {
+		// Fetch the data from firebase
 			let courses = [];
 			let rawCourses = [];
 			console.log(coursesRef.state.rawUserCourses);
@@ -218,7 +221,7 @@ class Course extends Component {
 						typeof coursesRef.state.rawUserCourses.find((element)=>(courseObject.slugName===element.slugName)) === 'undefined'
 					){
 						courses.push(
-							coursesRef.renderCourse(courseObject, course)
+							coursesRef.renderCourse(courseObject, courseObject.slugName)
 						);
 						rawCourses.push(
 							courseObject
