@@ -22,7 +22,10 @@ class Course extends Component {
 			courses: [],
 			rawCourses: [],
 			userCourses: [],
-			userCoursesInitialized: true};
+			rawUserCourses: [],
+			curDept: '',
+			userCoursesInitialized: true
+		};
 	}
 
 	componentDidMount(){
@@ -31,8 +34,8 @@ class Course extends Component {
 		window.$('.collapsible').collapsible();
 		window.$('select').material_select();
 		//Async call to retrieve courses
-		this.retrieveCourses();
 		this.retrieveUserCourses();
+		this.retrieveCourses();
 	}
 
 	componentWillUnmount() {
@@ -54,7 +57,8 @@ class Course extends Component {
 			}
 		}
 		this.setState({
-			courses: filteredCourses
+			courses: filteredCourses,
+			curDept: department
 		});
 	}
 
@@ -64,6 +68,7 @@ class Course extends Component {
     // Fetch the data from firebase
 		FirebaseActions.userSpace(cookie.load('TOKEN'), function (response) {
 			let userCourses = [];
+			let rawUserCourses = [];
 			if (response.userSpace.Courses.initialized) {
 				for (let course in response.userSpace.Courses) {
 					if (response.userSpace.Courses.hasOwnProperty(course) && course !== 'initialized') {
@@ -71,10 +76,14 @@ class Course extends Component {
 						userCourses.push(
 							coursesRef.renderCourse(courseObject, course, true)
 						);
+						rawUserCourses.push(
+							courseObject
+						);
 					}
 				}
 				coursesRef.setState({
 					userCourses: userCourses,
+					rawUserCourses: rawUserCourses,
 					userCoursesInitialized: true
 				});
 			} else {
@@ -127,12 +136,28 @@ class Course extends Component {
 			if (response.Successful) {
 				coursesRef.retrieveUserCourses();
 			}
+			//remove from courses.
+			let courses = coursesRef.state.courses;
+			let rawCourses = coursesRef.state.rawCourses;
+			courses.splice(
+				courses.findIndex((element)=>(element.key===course.slugName)),1
+			);
+			rawCourses.splice(
+				rawCourses.findIndex((element)=>(element.slugName===course.slugName)),1
+			);
+
+			coursesRef.setState({
+				courses: courses,
+				rawCourses: rawCourses
+			});
 		});
 	}
 
 	removeUserCourse(course) {
 		let google = cookie.load('TOKEN');
 		let coursesRef = this;
+		let courses = this.state.courses;
+		let rawCourses = this.state.rawCourses;
 		FirebaseActions.removeUserCourse(google, course, function(response) {
 			if (response.Successful) {
 				let uCourses = coursesRef.state.userCourses;
@@ -142,8 +167,34 @@ class Course extends Component {
 						break;
 					}
 				}
+				//add the course back to the raw list,
+				rawCourses.push(course);
+				//sort courses by slugname
+				rawCourses.sort(function(a,b){
+					if(a.slugName<b.slugName){
+						return -1;
+					}
+					if(a.slugName>b.slugName){
+						return 1;
+					}
+					return 0;
+				});
+				//add to the displayed courses list, only if the depatment is correct
+				if(coursesRef.state.curDept==='' ||course.slugName.startsWith(coursesRef.state.curDept)){
+					courses.push(coursesRef.renderCourse(course, course.slugName));
+					//sort courses by key
+					courses.sort(function(a,b){
+						if(a.key<b.key){
+							return -1;
+						}
+						if(a.key>b.key){
+							return 1;
+						}
+						return 0;
+					});
+				}
 				coursesRef.setState({
-					userCourses: uCourses
+					userCourses: uCourses,
 				});
 			}
 		});
@@ -159,12 +210,17 @@ class Course extends Component {
 			for (let course in response.courses) {
 				if (response.courses.hasOwnProperty(course)) {
 					const courseObject = response.courses[course];
-					courses.push(
-						coursesRef.renderCourse(courseObject, course)
-					);
-					rawCourses.push(
-						response.courses[course]
-					);
+					//Only add the course to the course list to be displayed if it isn't a user course.
+					if(
+						coursesRef.state.rawUserCourses.find((element)=>(courseObject.slugName===element.slugName))===undefined
+					){
+						courses.push(
+							coursesRef.renderCourse(courseObject, course)
+						);
+						rawCourses.push(
+							courseObject
+						);
+					}
 				}
 			}
 			coursesRef.setState({
