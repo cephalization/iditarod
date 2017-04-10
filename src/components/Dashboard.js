@@ -24,6 +24,7 @@ class Dashboard extends Component {
 			auditHistory: [],
 			audits: [],
 			auditInitialized: false,
+			chartClass: 'hide',
 			chartData:{
 				labels:[
 					'Completed',
@@ -31,7 +32,7 @@ class Dashboard extends Component {
 				],
 				datasets:[
 					{
-						data: [56,76],
+						data: [0,0],
 						backgroundColor:[
 							'#0ef729',
 							'#f92020'
@@ -44,7 +45,8 @@ class Dashboard extends Component {
 				]
 			},
 			chartOptions:{
-				mantainAspectRatio: false
+				mantainAspectRatio: false,
+				responsive: true
 			}
 		};
 	}
@@ -54,6 +56,7 @@ class Dashboard extends Component {
 		//if we're not signed in, then we need to re-auth, or redirect to the login page.
 		props.checkAuth('Dashboard');
 		this.retrieveUserSpace();
+		this.updatePieChart();
 	}
 
 	retrieveUserSpace() {
@@ -180,7 +183,24 @@ class Dashboard extends Component {
 	}
 
 	updatePieChart(){
+		let oldChartData = this.state.chartData;
+		let dashboardRef = this;
+		FirebaseActions.getCreditsTaken(cookie.load('TOKEN'), function(credsTaken){
+			FirebaseActions.getTotalCredits(function(credsTotal){
+				let credsRemaining = credsTotal - credsTaken;
+				oldChartData.datasets[0].data[0] = credsTaken;
+				if(credsRemaining<0){
+					oldChartData.datasets[0].data[1] = 0;
+				}else{
+					oldChartData.datasets[0].data[1] = credsRemaining;
+				}
+				dashboardRef.setState({
+					chartClass: '',
+					chartData: oldChartData
+				});
 
+			});
+		});
 	}
 
 	render() {
@@ -192,8 +212,8 @@ class Dashboard extends Component {
 							<div className="information-panel">
 								<h2>Overall Degree Completion</h2>
 								<div className="row center-align">
-									<div className="col l6 offset-l3 m10 offset-m1">
-										<Pie data={this.state.chartData} options={this.state.chartOptions} width={100} height={100}/>
+									<div className={/*'col l6 offset-l3 m10 offset-m1 ' +*/ this.state.chartClass}>
+										<Pie data={this.state.chartData} options={this.state.chartOptions} redraw/>
 									</div>
 								</div>
 							</div>

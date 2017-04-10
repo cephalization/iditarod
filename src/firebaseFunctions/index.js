@@ -65,7 +65,7 @@ export function userSpace(cookie, callback){
 
 export function addUserCourse(cookie, course, callback) {
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
-	Firebase.auth().signInWithCredential(cred).then(function(user) {
+	Firebase.auth().signInWithCredential(cred).once('value', function(user) {
 		let uid = user.uid;
 		console.log('Users/' + uid + '/Courses/');
 		database.ref('Users/' + uid + '/Courses').once('value', function(snapshot){
@@ -116,6 +116,22 @@ export function removeUserCourse(cookie, course, callback) {
 	});
 }
 
+export function getCreditsTaken(cookie, callback){
+	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
+	Firebase.auth().signInWithCredential(cred).then(function(user) {
+		let uid = user.uid;
+		database.ref('Users/' + uid + '/totalCredits').once('value', function(snapshot){
+			callback(snapshot.val());
+		});
+	});
+}
+
+export function getTotalCredits(callback){
+	database.ref('Audits/CompSci-CompSci/credits_min').once('value', function(datasnapshot){
+		callback(datasnapshot.val());
+	});
+}
+
 function addCredits(val, uid){
 	database.ref('Users/' + uid).once('value', function(snapshot){
 		let numCreds = 0;
@@ -125,5 +141,4 @@ function addCredits(val, uid){
 		numCreds+=val;
 		database.ref('Users/' + uid + '/totalCredits').set(numCreds);
 	});
-
 }
