@@ -113,7 +113,7 @@ async function generateAudit(request, response) {
 	let auditRequirements = await getAuditRequirements();
 
 	// Run the degree audit with the newly retrieved user information
-	Audit.compareCoursesToAudit(userCourses, auditRequirements);
+	console.log(Audit.compareCoursesToAudit(userCourses, auditRequirements));
 
 	// Save a completed audit to the database
 }
