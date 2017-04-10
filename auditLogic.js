@@ -31,19 +31,17 @@ exports.compareCoursesToAudit = function(courses, audit)
 					// TODO
 				break;
 			case /OR[0-9]+/.test(prop):
-					// TODO
 				result = checkOr(courses, audit[key][prop]);
-				if( result.success === true){
-					ret.completed[key] = ret.completed[key].concat(result.out);
+				if( result.completed === true){
+					ret.completed[key] = ret.completed[key].concat(result.completedItems);
 				}else{
 					ret.uncompleted[key][prop] = audit[key][prop];
 				}
 				break;
 			case /AND[0-9]+/.test(prop):
-					// TODO
 				result = checkAnd(courses, audit[key][prop]);
-				if( result.success === true){
-					ret.completed[key] = ret.completed[key].concat(result.out);
+				if( result.completed === true){
+					ret.completed[key] = ret.completed[key].concat(result.completedItems);
 				}else{
 					ret.uncompleted[key][prop] = audit[key][prop];
 				}
@@ -61,79 +59,84 @@ exports.compareCoursesToAudit = function(courses, audit)
 	}
 	return ret;
 };
-//Returns ret, which has an attribute success, which is true if
-//the req is fufilled; out is an array that contains the courses
+//Returns ret, which has an attribute completed, which is true if
+//the req is fufilled; completedItems is an array that contains the courses
 //that fufilled it.
 function checkOr(courses, or_obj){
 	let ret = {
-		success:false,
-		out:[]
+		completed:false,
+		completedItems:[]
 	};
 
 	for(let or_course in or_obj){
 		//Check if it's a nested AND or OR
-		if(/AND[0-9]+/.test(or_course)){
-			let result = checkAnd(courses, or_obj[or_course]);
-			if(result.success === true){
-				ret.success = true;
-				ret.out = result.out;
+		let result;
+		switch(true){
+		case /AND[0-9]+/.test(or_course):
+			result = checkAnd(courses, or_obj[or_course]);
+			if(result.completed === true){
+				ret.completed = true;
+				ret.completedItems = result.completedItems;
 				return ret;
 			}
-			continue;
-		}else if(/OR[0-9]+/.test(or_course)){
-			let result = checkOr(courses, or_obj[or_course]);
-			if(result.success === true){
-				ret.success = true;
-				ret.out = result.out;
+			break;
+		case (/OR[0-9]+/.test(or_course)):
+			result = checkOr(courses, or_obj[or_course]);
+			if(result.completed === true){
+				ret.completed = true;
+				ret.completedItems = result.completedItems;
 				return ret;
 			}
-			continue;
-		}
-		for(let i = 0;i<courses.length;i++){
-			if(courses[i].slugName === or_course){
-				ret.success = true;
-				ret.out = courses[i];
-				return ret;
+			break;
+		default:
+			for(let i = 0;i<courses.length;i++){
+				if(courses[i].slugName === or_course){
+					ret.completed = true;
+					ret.completedItems = courses[i];
+					return ret;
+				}
 			}
 		}
 	}
 	return ret;
 }
-//Returns ret, which has an attribute success, which is true if
-//the req is fufilled; out is an array that contains the courses
+//Returns ret, which has an attribute completed, which is true if
+//the req is fufilled; completedItems is an array that contains the courses
 //that fufilled it.
 function checkAnd(courses, and_obj){
 	let ret = {
-		success:true,
-		out:[]
+		completed:true,
+		completedItems:[]
 	};
 	for(let and_course in and_obj){
+		let result;
 		//Check if it's a nested AND or OR
-		if(/AND[0-9]+/.test(and_course)){
-			let result = checkAnd(courses, and_obj[and_course]);
-			if(!result.success){
-				ret.success = false;
-				//return ret;
+		switch(true){
+		case /AND[0-9]+/.test(and_course):
+			result = checkAnd(courses, and_obj[and_course]);
+			if(!result.completed){
+				ret.completed = false;
 			}
 			//merge the two arrays
-			Array.prototype.push.apply(ret.out, result.out);
-			continue;
-		}else if(/OR[0-9]+/.test(and_course)){
-			let result = checkOr(courses, and_obj[and_course]);
+			Array.prototype.push.apply(ret.completedItems, result.completedItems);
+			break;
+		case /OR[0-9]+/.test(and_course):
+			result = checkOr(courses, and_obj[and_course]);
 			if(!result){
-				ret.success = false;
+				ret.completed = false;
 			}
 			//merge arrays
-			Array.prototype.push.apply(ret.out, result.out);
-			continue;
-		}
-		let result = courses.find(function(element){
-			return element.slugName === and_course;
-		});
-		if(result !== undefined){
-			ret.out.push(result);
-		}else{
-			ret.success = false;
+			Array.prototype.push.apply(ret.completedItems, result.completedItems);
+			break;
+		default:
+			result = courses.find(function(element){
+				return element.slugName === and_course;
+			});
+			if(result !== undefined){
+				ret.completedItems.push(result);
+			}else{
+				ret.completed = false;
+			}
 		}
 	}
 	return ret;
