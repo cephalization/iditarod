@@ -9,7 +9,8 @@
 		"sourceType": "module",
 		"ecmaFeatures": {
 			"jsx": true
-		}
+		},
+		"ecmaVersion" : 8
 	},
 	"rules": {
 		"indent": [

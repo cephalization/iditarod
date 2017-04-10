@@ -23,7 +23,7 @@ class Dashboard extends Component {
 			courseInitialized: true,
 			auditHistory: [],
 			audits: [],
-			auditInitialized: true,
+			auditInitialized: false,
 			chartData:{
 				labels:[
 					'Completed',
@@ -105,13 +105,19 @@ class Dashboard extends Component {
 
 	}
 
+	// This only starts the request for now, it does not get a response
+	runAudit() {
+		let auditRequest = new Request('/run/audit', {method: 'POST', credentials: 'same-origin'});
+		fetch(auditRequest);
+	}
+
 	renderAuditHistory() {
 		if (this.state.auditInitialized) {
 			const exists = (
 				<div className="content-section">
 					<p>Your most recent audit</p>
 					<ul>
-						{this.state.courseHistory.length ? this.state.courseHistory : '...' }
+						{this.state.auditHistory.length ? this.state.auditHistory : '...' }
 					</ul>
 				</div>
 			);
@@ -120,7 +126,7 @@ class Dashboard extends Component {
 			const notExists = (
 				<div className="content-section">
 					<p>You have not run any audits yet!</p>
-					<a className="btn" href="/audits">Run Audit</a>
+					<button className="btn" onClick={this.runAudit}>Run Audit</button>
 				</div>
 			);
 			return notExists;
