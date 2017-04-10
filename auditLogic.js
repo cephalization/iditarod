@@ -30,9 +30,11 @@ exports.compareCoursesToAudit = function(courses, audit)
 				break;
 			case /OR[0-9]+/.test(prop):
 					// TODO
+				checkOr(audit[key][prop]);
 				break;
 			case /AND[0-9]+/.test(prop):
 					// TODO
+				checkAnd(audit[key][prop]);
 				break;
 			case /[A-Z][A-Z]+_[0-9]{4}/.test(prop):
 					// TODO
@@ -45,4 +47,12 @@ exports.compareCoursesToAudit = function(courses, audit)
 			}
 		}
 	}
+};
+//Returns true if fufilled, false if not fufilled.
+function checkOr(or_obj){
+	
+}
+
+function checkAnd(and_obj){
+
 }

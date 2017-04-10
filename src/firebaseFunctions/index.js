@@ -65,7 +65,7 @@ export function userSpace(cookie, callback){
 
 export function addUserCourse(cookie, course, callback) {
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
-	Firebase.auth().signInWithCredential(cred).once('value', function(user) {
+	Firebase.auth().signInWithCredential(cred).then(function(user) {
 		let uid = user.uid;
 		console.log('Users/' + uid + '/Courses/');
 		database.ref('Users/' + uid + '/Courses').once('value', function(snapshot){
