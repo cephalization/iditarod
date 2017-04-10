@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require ('cookie-parser');
 const Firebase = require('firebase');
+const Audit = require('./auditLogic');
 
 // Configure and initialize an admin connection to firebase
 const config = {
@@ -50,7 +51,7 @@ app.post('*', function(req, res){
 	}
 });
 
-async function getUserSpace(cookie){
+async function getUserSpace(cookie) {
 	// Authenticate to the user's data on firebase
 	let us = {};
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
@@ -63,6 +64,15 @@ async function getUserSpace(cookie){
 		us = snapshot.val();
 	});
 	return us;
+}
+
+async function getAuditRequirements() {
+	let audits = database.ref('Audits/');
+	let requirements = {};
+	await audits.once('value', function(snapshot) {
+		requirements = snapshot.child('CompSci-CompSci').val();
+	});
+	return requirements;
 }
 
 // Request contains
@@ -100,11 +110,10 @@ async function generateAudit(request, response) {
 	console.log('The user has taken', userCourses.length, 'courses, for a total of', takenCredits, 'credits');
 
 	// Load degree audit requirements from firebase
+	let auditRequirements = await getAuditRequirements();
 
-	// Create a user audit object
-	// it will have a property for each requirement
-	// each requirement will have a property for courses taken fulfilling this property, courses yet to be taken, credits completed for requirement
-	// Parse degree audit per pseudo specs, save results in user audit object
+	// Run the degree audit with the newly retrieved user information
+	Audit.compareCoursesToAudit(userCourses, auditRequirements);
 
 	// Save a completed audit to the database
 }
