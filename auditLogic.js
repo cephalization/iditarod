@@ -31,7 +31,7 @@ exports.compareCoursesToAudit = function(courses, audit)
 				} else {
 					ret.uncompleted[key][prop] = audit[key][prop];
 					if (Object.keys(result.completedItems).length) {
-						ret.completed[key] = ret.completed[key].concat(result.completedItems);
+						ret.completed[key][prop] = result.completedItems;
 					}
 				}
 				break;
@@ -182,12 +182,22 @@ function checkSelectFrom(courses, req, selectReq) {
 		return result;
 	}
 
+	let type = 0;
+	for (let courseSlug in selectReq) {
+		if (/[A-Z][A-Z]+_[0-9]{4}/.test(courseSlug)) {
+			type = (typeof selectReq[courseSlug] === "string" ? 0 : 1);
+			break;
+		} else {
+			continue;
+		}
+	}
+
 	// Check if courses are specific or not
-	if (req) {
+	if (type) {
 		return checkSelectHelperNum(courses, selectReq);
 	} else {
 		// function to deal with courses that are not xxx
-		return null;
+		return checkSelectHelperString(courses, selectReq);
 	}
 }
 
@@ -248,4 +258,43 @@ function checkSelectHelperNum(courses, selectReq) {
 		result.completed = true;
 		return result;
 	}
+}
+
+function checkSelectHelperString(courses, selectReq)
+{
+	console.log('courses: \n');
+	console.log(courses);
+	console.log('\n');
+
+	let creditsReq = selectReq.credits_min;
+	let creditsEarned = 0;
+	ret = {
+		completed: false,
+		completedItems: {}
+	};
+
+	for (course in selectReq) {
+		if (course === "credits_min") {
+			continue;
+		}
+
+		let index = courses.find(function(element) {
+					return element.slugName === course;
+				});
+		if (index != undefined) {
+			console.log("found course " + course + " containing: \n");
+			console.log(index);
+			console.log('\n');
+			creditsEarned += index.credits;
+			ret.completedItems[course] = selectReq[course];
+		}
+	}
+
+	if (creditsEarned >= creditsReq) {
+		ret.completed = true;
+	}
+
+	//console.log("checkSelectHelperString returning: \n" + ret + "\n");
+
+	return ret;
 }
