@@ -36,6 +36,11 @@ h2 {
 	font-family: 'Roboto';
 }
 
+p1 {
+	font-family: 'Roboto';
+	font-size: 1.5em;
+}
+
 /*
 	Common Layouts
 */
@@ -64,13 +69,13 @@ h2 {
 }
 
 .information-panel {
-	overflow: hidden;
+	overflow: scroll;
 	text-overflow: ellipsis;
 	background-color: #FFF;
 	border-radius: 5px;
 	-webkit-box-shadow: 3px 3px 5px 6px #ccc;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-  -moz-box-shadow: 3px 3px 5px 6px #ccc;  /* Firefox 3.5 - 3.6 */
-  box-shadow: 3px 3px 5px 6px #ccc;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+  	-moz-box-shadow: 3px 3px 5px 6px #ccc;  /* Firefox 3.5 - 3.6 */
+  	box-shadow: 3px 3px 5px 6px #ccc;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 	margin-top: 15px;
 	margin-bottom: 15px;
 	margin-left: auto;
@@ -86,6 +91,12 @@ h2 {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+}
+
+.panel-bl {
+	min-height: 330px;
+	max-height: 330px;
+	text-align: left;
 }
 
 .panel-lg {
