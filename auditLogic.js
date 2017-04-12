@@ -28,7 +28,7 @@ exports.compareCoursesToAudit = function(courses, audit)
 			let result = {};
 			switch(true) {
 			case /select_from.*/.test(prop):
-					// TODO
+				// TODO
 				break;
 			case /OR[0-9]+/.test(prop):
 				result = checkOr(courses, audit[key][prop]);
@@ -47,18 +47,37 @@ exports.compareCoursesToAudit = function(courses, audit)
 				}
 				break;
 			case /[A-Z][A-Z]+_[0-9]{4}/.test(prop):
-					// TODO
+				if (checkExactCourse(courses, prop)) {
+					ret.completed[key][prop] = audit[key][prop];
+				} else {
+					ret.uncompleted[key][prop] = audit[key][prop];
+				}
 				break;
 			case /credits_min|min_credits/.test(prop):
-					// TODO
+				// TODO
+				break;
+			case /HASS/.test(prop):
+				// TODO
 				break;
 			default:
-					// TODO Something must have gone wrong
+				// TODO Something must have gone wrong
 			}
 		}
 	}
 	return ret;
 };
+
+function checkExactCourse(courses, course)
+{
+	//
+	for (let courseI in courses) {
+		if (courseI === course) {
+			return true;
+		}
+	}
+	return false;
+};
+
 //Returns ret, which has an attribute completed, which is true if
 //the req is fufilled; completedItems is an array that contains the courses
 //that fufilled it.
