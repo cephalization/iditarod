@@ -244,7 +244,7 @@ class Course extends Component {
 	render() {
 		return (
 			<div>
-				<div className="row">
+				<div className="row mobile-scroll">
 					<div className="col s12 m6 l6">
 						<h5 className="col s5">Course List</h5>
 							<select id="deptChoice" className="browser-default custom-select col s7" defaultValue="0" onChange={(e) => {this.filterCourses(e);}}>

@@ -59,10 +59,6 @@ class RootComponent extends React.Component {
 		}
 	}
 
-	// componentWillMount() {
-	// 	this.checkAuthentication('NavBar');
-	// }
-
 	render () {
 		return (
 			<div>

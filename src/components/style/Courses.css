@@ -16,8 +16,11 @@
   max-height: 140px;
 }
 
-/*@media (max-width:768px) {
-  .property-list {
-    width: 100%;
+@media (max-width:768px) {
+  .mobile-scroll {
+    display: flex;
+    max-height: 100vh;
+    width: calc(2*100vw);
+    overflow-y: auto;
   }
-}*/
+}

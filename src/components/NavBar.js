@@ -77,22 +77,20 @@ class NavBar extends Component {
 
 	render() {
 		return (
-			<div>
-				<div className="navbar-fixed">
-					<nav className="jet-black-bg">
-						<div className="nav-wrapper mtu-yellow-text">
-							<a href="#"
-								data-activates="mobile-nav"
-								className="button-collapse"
-								onClick={(e) => {e.preventDefault();}}>
-								<i className="material-icons">menu</i>
-							</a>
-							<a href="/" className="brand-logo"><img src={logo} alt="logo"/></a>
-							{this.renderSignOut(this.props)}
-							{this.renderLinks(this.props)}
-						</div>
-					</nav>
-				</div>
+			<div className="navbar-fixed">
+				<nav className="jet-black-bg">
+					<div className="nav-wrapper mtu-yellow-text">
+						<a href="#"
+							data-activates="mobile-nav"
+							className="button-collapse"
+							onClick={(e) => {e.preventDefault();}}>
+							<i className="material-icons">menu</i>
+						</a>
+						<a href="/" className="brand-logo"><img src={logo} alt="logo"/></a>
+						{this.renderSignOut(this.props)}
+						{this.renderLinks(this.props)}
+					</div>
+				</nav>
 				{this.renderSideNav(this.props)}
 			</div>
 		);
