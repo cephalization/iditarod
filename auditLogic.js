@@ -20,7 +20,7 @@ exports.compareCoursesToAudit = function(courses, audit)
 		if (key === 'credits_min') {
 			continue;
 		}
-		ret.completed[key] = [];
+		ret.completed[key] = {};
 		ret.uncompleted[key] = {};
 		for (let prop in audit[key]) {
 			// Switch on type of info in requirement
@@ -33,7 +33,7 @@ exports.compareCoursesToAudit = function(courses, audit)
 			case /OR[0-9]+/.test(prop):
 				result = checkOr(courses, audit[key][prop]);
 				if( result.completed === true){
-					ret.completed[key] = ret.completed[key].concat(result.completedItems);
+					ret.completed[key][prop] = result.completedItems;
 				}else{
 					ret.uncompleted[key][prop] = audit[key][prop];
 				}
@@ -41,7 +41,7 @@ exports.compareCoursesToAudit = function(courses, audit)
 			case /AND[0-9]+/.test(prop):
 				result = checkAnd(courses, audit[key][prop]);
 				if( result.completed === true){
-					ret.completed[key] = ret.completed[key].concat(result.completedItems);
+					ret.completed[key][prop] = result.completedItems;
 				}else{
 					ret.uncompleted[key][prop] = audit[key][prop];
 				}
@@ -69,9 +69,8 @@ exports.compareCoursesToAudit = function(courses, audit)
 
 function checkExactCourse(courses, course)
 {
-	//
 	for (let courseI in courses) {
-		if (courseI === course) {
+		if (courses[courseI].slugName === course) {
 			return true;
 		}
 	}
