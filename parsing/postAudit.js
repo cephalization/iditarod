@@ -8,7 +8,7 @@ let audit = require('./degreeLayout.json');
 let db = admin.database();
 let ref = db.ref('Audits/');
 console.log('beginning upload');
-ref.update(audit.Audits).then(function() {
+ref.set(audit.Audits).then(function() {
 	console.log('upload complete');
 	app.delete();
 });
