@@ -97,7 +97,6 @@ async function generateAudit(request, response) {
 	// Populating User's taken courses, credits taken
 	if (userSpace.Courses.initialized) {
 		for (let course in userSpace.Courses) {
-			console.log('course is', course);
 			if (userSpace.Courses.hasOwnProperty(course) && course !== 'initialized') {
 				userCourses.push(userSpace.Courses[course]);
 			}
@@ -113,6 +112,7 @@ async function generateAudit(request, response) {
 	let auditRequirements = await getAuditRequirements();
 
 	// Run the degree audit with the newly retrieved user information
+
 	console.log(Audit.compareCoursesToAudit(userCourses, auditRequirements));
 
 	// Save a completed audit to the database

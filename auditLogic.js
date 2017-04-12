@@ -1,7 +1,4 @@
 exports = module.exports = {};
-/* Function(s) for comparing user's courses with degree requirements
- *
- */
 
 /* Compares a user's taken courses with a degree's requirements and returns an
  * object containing lists of classes towards the degree and classes still
@@ -20,6 +17,7 @@ exports.compareCoursesToAudit = function(courses, audit)
 		if (key === 'credits_min') {
 			continue;
 		}
+		// Store analysis of degree requirements in these arrays
 		ret.completed[key] = [];
 		ret.uncompleted[key] = {};
 		for (let prop in audit[key]) {
@@ -28,7 +26,15 @@ exports.compareCoursesToAudit = function(courses, audit)
 			let result = {};
 			switch(true) {
 			case /select_from.*/.test(prop):
-				// TODO
+				result = checkSelectFrom(courses, key, audit[key][prop]);
+				if (result.completed) {
+					ret.completed[key] = ret.completed[key].concat(result.completedItems);
+				} else {
+					ret.uncompleted[key][prop] = audit[key][prop];
+					if (Object.keys(result.completedItems).length) {
+						ret.completed[key] = ret.completed[key].concat(result.completedItems);
+					}
+				}
 				break;
 			case /OR[0-9]+/.test(prop):
 				result = checkOr(courses, audit[key][prop]);
@@ -52,6 +58,7 @@ exports.compareCoursesToAudit = function(courses, audit)
 				} else {
 					ret.uncompleted[key][prop] = audit[key][prop];
 				}
+					// TODO Check if the current prop fulfills a course requirement
 				break;
 			case /credits_min|min_credits/.test(prop):
 				// TODO
@@ -76,7 +83,7 @@ function checkExactCourse(courses, course)
 		}
 	}
 	return false;
-};
+}
 
 //Returns ret, which has an attribute completed, which is true if
 //the req is fufilled; completedItems is an array that contains the courses
@@ -119,6 +126,11 @@ function checkOr(courses, or_obj){
 	}
 	return ret;
 }
+
+/*
+ * Function(s) for comparing user's courses with degree requirements
+ */
+
 //Returns ret, which has an attribute completed, which is true if
 //the req is fufilled; completedItems is an array that contains the courses
 //that fufilled it.
@@ -159,4 +171,83 @@ function checkAnd(courses, and_obj){
 		}
 	}
 	return ret;
+}
+
+function checkSelectFrom(courses, req, selectReq) {
+	let result = {
+		completed: false,
+		completedItems: {}
+	};
+
+	// Special case for dealing with Lab Sciences
+	if (req === 'Lab_Science') {
+		return result;
+	}
+
+	// Check if courses are specific or not
+	if (req) {
+		return checkSelectHelperNum(courses, selectReq);
+	} else {
+		// function to deal with courses that are not xxx
+		return null;
+	}
+}
+
+function checkSelectHelperNum(courses, selectReq) {
+	let result = {
+		completed: false,
+		completedItems: {}
+	};
+
+	// Parse the course levels that are required
+	let courseRegex = [];
+	for (let cLevel in selectReq) {
+		let cReq = {
+			regex: '',
+			needed: 0,
+			original: cLevel
+		};
+		let regString = '';
+		let ending = '';
+		for (let i = 0; i < cLevel.length; i++) {
+			if (cLevel[i] !== '_' && cLevel[i] != 'x') {
+				regString += cLevel[i];
+			}
+			if (cLevel[i] === '_') {
+				ending = '_' + cLevel[i+1];
+				break;
+			}
+		}
+		cReq.regex = regString + ending;
+		cReq.needed = selectReq[cLevel];
+		courseRegex.push(cReq);
+	}
+
+	// Check if the user has taken enough courses
+	for (let i = 0; i < courseRegex.length; i++) {
+		let currentSelect = courseRegex[i];
+		let completedCourses = [];
+		for (let j = 0; j < courses.length; j++) {
+			if (courses[j].slugName.startsWith(currentSelect.regex)) {
+				currentSelect.needed -= 1;
+				completedCourses.push(courses[j]);
+
+				if (currentSelect.needed === 0) {
+					result.completedItems[currentSelect.original] = completedCourses.slice();
+					courseRegex.slice(i,1);
+					break;
+				}
+			}
+		}
+		console.log(currentSelect.original, 'has',
+		currentSelect.needed, 'left with',
+		result.completedItems[currentSelect.original]);
+	}
+
+	if (courseRegex.length) {
+		return result;
+	} else {
+		result.completed = true;
+		return result;
+	}
 }
