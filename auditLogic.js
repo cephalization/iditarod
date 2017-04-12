@@ -27,7 +27,7 @@ exports.compareCoursesToAudit = function(courses, audit)
 			case /select_from.*/.test(prop):
 				result = checkSelectFrom(courses, key, audit[key][prop]);
 				if (result.completed) {
-					ret.completed[key] = ret.completed[key].concat(result.completedItems);
+					ret.completed[key][prop] = result.completedItems;
 				} else {
 					ret.uncompleted[key][prop] = audit[key][prop];
 					if (Object.keys(result.completedItems).length) {
@@ -185,7 +185,7 @@ function checkSelectFrom(courses, req, selectReq) {
 	let type = 0;
 	for (let courseSlug in selectReq) {
 		if (/[A-Z][A-Z]+_[0-9]{4}/.test(courseSlug)) {
-			type = (typeof selectReq[courseSlug] === "string" ? 0 : 1);
+			type = (typeof selectReq[courseSlug] === 'string' ? 0 : 1);
 			break;
 		} else {
 			continue;
@@ -247,9 +247,9 @@ function checkSelectHelperNum(courses, selectReq) {
 				}
 			}
 		}
-		console.log(currentSelect.original, 'has',
-		currentSelect.needed, 'left with',
-		result.completedItems[currentSelect.original]);
+		// console.log(currentSelect.original, 'has',
+		// currentSelect.needed, 'left with',
+		// result.completedItems[currentSelect.original]);
 	}
 
 	if (courseRegex.length) {
@@ -262,39 +262,29 @@ function checkSelectHelperNum(courses, selectReq) {
 
 function checkSelectHelperString(courses, selectReq)
 {
-	console.log('courses: \n');
-	console.log(courses);
-	console.log('\n');
-
 	let creditsReq = selectReq.credits_min;
 	let creditsEarned = 0;
-	ret = {
+	let ret = {
 		completed: false,
 		completedItems: {}
 	};
 
-	for (course in selectReq) {
-		if (course === "credits_min") {
+	for (let course in selectReq) {
+		if (course === 'credits_min') {
 			continue;
 		}
 
 		let index = courses.find(function(element) {
-					return element.slugName === course;
-				});
+			return element.slugName === course;
+		});
 		if (index != undefined) {
-			console.log("found course " + course + " containing: \n");
-			console.log(index);
-			console.log('\n');
-			creditsEarned += index.credits;
+			creditsEarned += Number(index.credits);
 			ret.completedItems[course] = selectReq[course];
 		}
 	}
-
 	if (creditsEarned >= creditsReq) {
 		ret.completed = true;
 	}
-
-	//console.log("checkSelectHelperString returning: \n" + ret + "\n");
 
 	return ret;
 }
