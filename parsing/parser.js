@@ -90,7 +90,11 @@ function parseData(rawData)
 		} catch (e) {
 			credits = strings[i + 1].split(/Credits: /)[1].split('Semester')[0].replace(/\s+/g, ' ').trim();
 		}
-		ret.Courses[classNumSP].credits = credits;
+		console.log(credits);
+		ret.Courses[classNumSP].credits = parseFloat(credits);
+		if (isNaN(ret.Courses[classNumSP].credits)) {
+			ret.Courses[classNumSP].credits = credits;
+		}
 
 		let recLecLabRegExp = /Lec-Rec-Lab: \((.*)\)/;
 		try {
