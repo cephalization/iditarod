@@ -59,11 +59,8 @@ exports.compareCoursesToAudit = function(courses, audit)
 				}
 					// TODO Check if the current prop fulfills a course requirement
 				break;
-			case /credits_min|min_credits/.test(prop):
-				// TODO
-				break;
 			case /HASS/.test(prop):
-				// TODO
+				ret.uncompleted[key][prop] = audit[key][prop];
 				break;
 			default:
 				// TODO Something must have gone wrong
