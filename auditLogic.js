@@ -1,4 +1,6 @@
-exports = module.exports = {};
+exports = module.exports = {
+	compareCoursesToAudit: compareCoursesToAudit
+};
 
 /* Compares a user's taken courses with a degree's requirements and returns an
  * object containing lists of classes towards the degree and classes still
@@ -9,7 +11,7 @@ exports = module.exports = {};
  * @return An object containing a list of courses that meet degree requirements
  * and a list of requirements not known to have been met.
  */
-exports.compareCoursesToAudit = function(courses, audit)
+function compareCoursesToAudit(courses, audit)
 {
 	let ret = {completed: {}, uncompleted: {}};
 
@@ -70,6 +72,15 @@ exports.compareCoursesToAudit = function(courses, audit)
 	return ret;
 };
 
+/* Function(s) for comparing user's courses with degree requirements */
+
+/* Check if a user has completed an exact course.
+ *
+ * @param courses An array of the courses that a user has taken, containing
+ * full course objects.
+ * @param course The course slug name to check for completion of.
+ * @return True or false wether the user has completed the course.
+ */
 function checkExactCourse(courses, course)
 {
 	for (let courseI in courses) {
@@ -122,10 +133,6 @@ function checkOr(courses, or_obj){
 	return ret;
 }
 
-/*
- * Function(s) for comparing user's courses with degree requirements
- */
-
 //Returns ret, which has an attribute completed, which is true if
 //the req is fufilled; completedItems is an array that contains the courses
 //that fufilled it.
@@ -168,6 +175,17 @@ function checkAnd(courses, and_obj){
 	return ret;
 }
 
+/* Determines if a user has completed a requirement replresented as select_from
+ * which comes in two flavors, exact courses with a credit minimum, or generic
+ * course types with number requirements.
+ *
+ * @param courses An array of course objects that the user has taken.
+ * @param req The name of the requirement group that the select_from is in.
+ * @param selectReq The object containing the select_from requirements.
+ * @return An object containing a boolean for if the entire requirement has
+ * been met, and an object containing the courses that contribute to the
+ * requirement.
+ */
 function checkSelectFrom(courses, req, selectReq) {
 	let result = {
 		completed: false,
@@ -198,6 +216,16 @@ function checkSelectFrom(courses, req, selectReq) {
 	}
 }
 
+/* A helper function to determine if a select_from requirement has been met.
+ * This is for the case where the select from contains generic course types
+ * with a minimum number of courses required.
+ *
+ * @param courses An array of course objects that the user has taken.
+ * @param selectReq The requirements of the select_from in object form.
+ * @return An object containg a boolean for wether the entire requirement
+ * has been completed, and an object containing the courses that contributute
+ * towards the completion of the requirement.
+ */
 function checkSelectHelperNum(courses, selectReq) {
 	let result = {
 		completed: false,
@@ -257,6 +285,16 @@ function checkSelectHelperNum(courses, selectReq) {
 	}
 }
 
+/* A helper function to determine if a select_from requirement has been met.
+ * This handles the case where specific classes are specified with a credit
+ * minimum.
+ *
+ * @param courses An array of course objects that the user has completed.
+ * @param selectReq An object containing the select_from requirements.
+ * @return An object containing a boolean for wether the entire requirement has
+ * been met, and an object containing courses that contribute to the completion
+ * of the requirement.
+ */
 function checkSelectHelperString(courses, selectReq)
 {
 	let creditsReq = selectReq.credits_min;
