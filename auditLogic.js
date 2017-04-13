@@ -91,13 +91,18 @@ function checkExactCourse(courses, course)
 	return false;
 }
 
-//Returns ret, which has an attribute completed, which is true if
-//the req is fufilled; completedItems is an array that contains the courses
-//that fufilled it.
+/* Check if an OR requirement has been met.
+ *
+ * @param courses An array of course objects that the user has completed.
+ * @param or_obj An object containing the requirements of the OR.
+ * @return An object containing  a boolean wether the requirement has been
+ * completed, and an object containing the courses that contribute to the
+ * completion of the requirement.
+ */
 function checkOr(courses, or_obj){
 	let ret = {
 		completed:false,
-		completedItems:[]
+		completedItems:{}
 	};
 
 	for(let or_course in or_obj){
@@ -120,26 +125,33 @@ function checkOr(courses, or_obj){
 				return ret;
 			}
 			break;
-		default:
-			for(let i = 0;i<courses.length;i++){
-				if(courses[i].slugName === or_course){
-					ret.completed = true;
-					ret.completedItems = courses[i];
-					return ret;
-				}
+		case /[A-Z][A-Z]+_[0-9]{4}/.test(or_course):
+			if (checkExactCourse(courses, or_course)) {
+				ret.completed = true;
+				ret.completedItems[or_course] = or_obj[or_course];
+				return ret;
 			}
+			break;
+		default:
+			// This should never be reached
+			console.log("Problem in OR requirement with requirement", or_course);
 		}
 	}
 	return ret;
 }
 
-//Returns ret, which has an attribute completed, which is true if
-//the req is fufilled; completedItems is an array that contains the courses
-//that fufilled it.
+/* Check if an AND requirement has been met.
+ *
+ * @param courses An array of course objects that the user has completed.
+ * @param or_obj An object containing the requirements of the AND.
+ * @return An object containing  a boolean wether the requirement has been
+ * completed, and an object containing the courses that contribute to the
+ * completion of the requirement.
+ */
 function checkAnd(courses, and_obj){
 	let ret = {
 		completed:true,
-		completedItems:[]
+		completedItems:{}
 	};
 	for(let and_course in and_obj){
 		let result;
@@ -150,26 +162,31 @@ function checkAnd(courses, and_obj){
 			if(!result.completed){
 				ret.completed = false;
 			}
-			//merge the two arrays
-			Array.prototype.push.apply(ret.completedItems, result.completedItems);
+			//merge the two objects
+			for (let compReq in result.completedItems) {
+				ret.completedItems[compReq] = result.completedItems[compReq];
+			}
 			break;
 		case /OR[0-9]+/.test(and_course):
 			result = checkOr(courses, and_obj[and_course]);
 			if(!result){
 				ret.completed = false;
 			}
-			//merge arrays
-			Array.prototype.push.apply(ret.completedItems, result.completedItems);
+			//merge the two objects
+			for (let compReq in result.completedItems) {
+				ret.completedItems[compReq] = result.completedItems[compReq];
+			}
 			break;
-		default:
-			result = courses.find(function(element){
-				return element.slugName === and_course;
-			});
-			if(result !== undefined){
-				ret.completedItems.push(result);
-			}else{
+		case /[A-Z][A-Z]+_[0-9]{4}/.test(and_course):
+			if (checkExactCourse(courses, and_course)) {
+					ret.completedItems[and_course] = and_obj[and_course];
+			} else {
 				ret.completed = false;
 			}
+			break;
+		default:
+			// This shouldn't ever be reached
+			console.log("Something went wrong in an AND with requirement", and_obj);
 		}
 	}
 	return ret;
