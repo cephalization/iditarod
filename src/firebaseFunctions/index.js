@@ -63,6 +63,15 @@ export function userSpace(cookie, callback){
 	});
 }
 
+export function getAudit(cookie, auditid, callback){
+	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
+	Firebase.auth().signInWithCredential(cred).then(function(user) {
+		database.ref('Users/'+user.uid+'/Audits/'+auditid).once('value', function(snapshot){
+			callback(snapshot.val());
+		});
+	});
+}
+
 export function addUserCourse(cookie, course, callback) {
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {

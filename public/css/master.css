@@ -69,7 +69,7 @@ p1 {
 }
 
 .information-panel {
-	overflow: auto;
+	overflow: hidden;
 	text-overflow: ellipsis;
 	background-color: #FFF;
 	border-radius: 5px;
@@ -131,3 +131,26 @@ p1 {
 /*
 	Materialize Overrides
 */
+
+/*
+	Audit css
+*/
+.completed-requirements {
+
+}
+
+.uncompleted-requirements {
+
+}
+
+.top-level-req {
+
+}
+
+.mid-level-req {
+
+}
+
+.low-level-req {
+
+}
