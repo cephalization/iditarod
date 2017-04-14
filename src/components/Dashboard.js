@@ -23,7 +23,7 @@ class Dashboard extends Component {
 			courseInitialized: true,
 			auditHistory: [],
 			audits: [],
-			auditInitialized: false,
+			auditInitialized: true,
 			chartClass: 'hide',
 			chartData:{
 				labels:[
@@ -85,6 +85,7 @@ class Dashboard extends Component {
 				let audits = response.userSpace.Audits;
 				for (let audit in audits) {
 					if (audits.hasOwnProperty(audit) && audit !== 'initialized') {
+						audits[audit].name = audit;
 						auditsList.push(audits[audit]);
 					}
 				}
@@ -101,26 +102,48 @@ class Dashboard extends Component {
 	}
 
 	retrieveAuditHistory() {
-
+		if (this.state.auditInitialized) {
+			let auditList = [];
+			let maxHist = 3;
+			let hist = 0;
+			for (let audit in this.state.audits) {
+				if (this.state.audits.hasOwnProperty(audit) && hist < maxHist) {
+					auditList.push(this.renderAudit(this.state.audits[audit]));
+					hist ++;
+				}
+			}
+			this.setState({
+				auditHistory: auditList,
+			});
+		}
 	}
 
-	renderAudit() {
-
+	renderAudit(audit) {
+		const auditInfo = (
+			<li key={audit.name}>{audit.name}</li>
+		);
+		return auditInfo;
 	}
 
 	// This only starts the request for now, it does not get a response
 	runAudit() {
 		let auditRequest = new Request('/run/audit', {method: 'POST', credentials: 'same-origin'});
-		fetch(auditRequest);
+		fetch(auditRequest).then((response) => response.json()).then((response) => {
+			console.log('The audit is donion-rings', response);
+		});
 	}
 
 	renderAuditHistory() {
 		if (this.state.auditInitialized) {
+			let temp = this.state.auditHistory.slice();
+			if (this.state.auditHistory) {
+				temp.push(<button key="btn" className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>);
+			}
 			const exists = (
 				<div className="content-section">
 					<p>Your most recent audit</p>
 					<ul>
-						{this.state.auditHistory.length ? this.state.auditHistory : '...' }
+						{this.state.auditHistory.length ? temp : '...' }
 					</ul>
 				</div>
 			);
@@ -146,10 +169,10 @@ class Dashboard extends Component {
 					courseList.push(this.renderCourse(this.state.courses[course]));
 					hist ++;
 				}
-				this.setState({
-					courseHistory: courseList,
-				});
 			}
+			this.setState({
+				courseHistory: courseList,
+			});
 		}
 	}
 
