@@ -16,6 +16,7 @@ class AuditList extends Component {
 		this.retrieveAuditHistory = this.retrieveAuditHistory.bind(this);
 		this.renderAuditHistory = this.renderAuditHistory.bind(this);
 		this.renderAudit = this.renderAudit.bind(this);
+		this.renderButton = this.renderButton.bind(this);
 
 		this.state = {
 			courseHistory: [],
@@ -95,15 +96,12 @@ class AuditList extends Component {
 	renderAuditHistory() {
 		if (this.state.auditInitialized) {
 			let temp = this.state.auditHistory.slice();
-			/*if (this.state.auditHistory) {
-				temp.push(<button key="btn" className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>);
-			}*/
 			const exists = (
 				<div className="content-section">
 					<p>Your audits</p>
-					<p2>
-						{this.state.auditHistory ? temp : '...' }
-					</p2>
+					<p1>
+						<a href='/audit/Apr_14_2017_11_21_54' >{this.state.auditHistory ? temp : '...'}</a>
+					</p1>
 				</div>
 			);
 			return exists;
@@ -181,6 +179,15 @@ class AuditList extends Component {
 		});
 	}
 
+	renderButton() {
+		if (this.state.auditHistory) {
+			<button className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>;
+		} else {
+			<button className="btn" onClick={this.runAudit}>Run Audit</button>
+		}
+
+	}
+
 	renderCourse(course) {
 		const courseInfo = (
 			<li key={course.slugName}>{course.name}</li>
@@ -231,6 +238,7 @@ class AuditList extends Component {
 			<div>
 				<div>
 					<div className="row center-align">
+						{this.renderButton()}
 						<div className="col l6 m8 s12">
 							<h3>Completed Credits</h3>
 							<div className="information-panel panel-bl">
