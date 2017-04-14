@@ -14,6 +14,8 @@ class AuditList extends Component {
 		this.retrieveCourseHistory = this.retrieveCourseHistory.bind(this);
 		this.renderCourseHistory = this.renderCourseHistory.bind(this);
 		this.retrieveAuditHistory = this.retrieveAuditHistory.bind(this);
+		this.renderAuditHistory = this.renderAuditHistory.bind(this);
+		this.renderAudit = this.renderAudit.bind(this);
 
 		this.state = {
 			courseHistory: [],
@@ -21,7 +23,7 @@ class AuditList extends Component {
 			courseInitialized: true,
 			auditHistory: [],
 			audits: [],
-			auditInitialized: false,
+			auditInitialized: true,
 			chartClass: 'hide',
 			chartData:{
 				labels:[
@@ -54,6 +56,66 @@ class AuditList extends Component {
 		props.checkAuth('AuditList');
 		this.retrieveUserSpace();
 		this.updatePieChart();
+	}
+
+	renderAudit(audit) {
+		const auditInfo = (
+			<li key={audit.name}>{audit.name}</li>
+		);
+		return auditInfo;
+	}
+
+	runAudit() {
+		let auditRequest = new Request('/run/audit', {method: 'POST', credentials: 'same-origin'});
+		fetch(auditRequest).then((response) => response.json()).then((response) => {
+			console.log('The audit is donion-rings', response);
+			if (response.Success) {
+				window.location.href=response.auditLink;
+			}
+		});
+	}
+
+	retrieveAuditHistory(){
+		if (this.state.auditInitialized) {
+			let auditList = [];
+			let maxHist = 5;
+			let hist = 0;
+			for (let audit in this.state.audits) {
+				if (this.state.audits.hasOwnProperty(audit) && hist < maxHist) {
+					auditList.push(this.renderAudit(this.state.audits[audit]));
+					hist ++;
+				}
+			}
+			this.setState({
+				auditHistory: auditList,
+			});
+		}
+	}
+
+	renderAuditHistory() {
+		if (this.state.auditInitialized) {
+			let temp = this.state.auditHistory.slice();
+			/*if (this.state.auditHistory) {
+				temp.push(<button key="btn" className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>);
+			}*/
+			const exists = (
+				<div className="content-section">
+					<p>Your most recent audit</p>
+					<ul>
+						{this.state.auditHistory.length ? temp : '...' }
+					</ul>
+				</div>
+			);
+			return exists;
+		} else {
+			const notExists = (
+				<div className="content-section">
+					<p>You have not run any audits yet!</p>
+					<button className="btn" onClick={this.runAudit}>Run Audit</button>
+				</div>
+			);
+			return notExists;
+		}
 	}
 
 	updatePieChart(){
@@ -142,10 +204,6 @@ class AuditList extends Component {
 		}
 	}
 
-	retrieveAuditHistory(){
-
-	}
-
 	renderCourseHistory() {
 		if (this.state.courseInitialized) {
 			const exists = (
@@ -183,9 +241,9 @@ class AuditList extends Component {
 							</div>
 						</div>
 							<div className="col l6 m8 s12">
-								<h3>Courses Taken</h3>
+								<h3>Past Audits</h3>
 								<div className="information-panel panel-bl">
-									{this.renderCourseHistory()}
+									{this.renderAuditHistory()}
 								</div>
 							</div>
 					</div>

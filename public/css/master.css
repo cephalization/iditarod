@@ -113,9 +113,10 @@ p1 {
 }
 
 .panel-bl {
+	overflow: scroll;
 	min-height: 330px;
 	max-height: 330px;
-	text-align: left;
+	text-align: center;
 }
 
 .panel-lg {
