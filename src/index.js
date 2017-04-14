@@ -70,7 +70,7 @@ class RootComponent extends React.Component {
 						<Match exactly pattern="/courses" render={() => <Courses checkAuth={this.checkAuthentication} />} />
 						<Match exactly pattern="/new/audit" render={() => <CreateAudit checkAuth={this.checkAuthentication} />} />
 						<Match exactly pattern="/stored/audit" render={() => <AuditList checkAuth={this.checkAuthentication} />} />
-						<Match exactly pattern="/audit/:AuditID" render={() => <Audit checkAuth={this.checkAuthentication} />} />
+						<Match exactly pattern="/audit/:AuditID" render={(props) => <Audit checkAuth={this.checkAuthentication} AuditID={props.params.AuditID}/>} />
 						<Miss component={NotFound} />
 					</div>
 				</BrowserRouter>

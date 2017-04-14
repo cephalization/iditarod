@@ -69,7 +69,7 @@ p1 {
 }
 
 .information-panel {
-	overflow: scroll;
+	overflow: hidden;
 	text-overflow: ellipsis;
 	background-color: #FFF;
 	border-radius: 5px;

@@ -5,14 +5,15 @@ import {Doughnut} from 'react-chartjs-2';
 
 class AuditList extends Component {
 
-constructor() {
-	super();
+	constructor() {
+		super();
 
-	this.updatePieChart = this.updatePieChart.bind(this);
-	this.retrieveUserSpace = this.retrieveUserSpace.bind(this);
-	this.renderCourse = this.renderCourse.bind(this);
-	this.retrieveCourseHistory = this.retrieveCourseHistory.bind(this);
-	this.renderCourseHistory = this.renderCourseHistory.bind(this);
+		this.updatePieChart = this.updatePieChart.bind(this);
+		this.retrieveUserSpace = this.retrieveUserSpace.bind(this);
+		this.renderCourse = this.renderCourse.bind(this);
+		this.retrieveCourseHistory = this.retrieveCourseHistory.bind(this);
+		this.renderCourseHistory = this.renderCourseHistory.bind(this);
+		this.retrieveAuditHistory = this.retrieveAuditHistory.bind(this);
 
 		this.state = {
 			courseHistory: [],
@@ -46,7 +47,7 @@ constructor() {
 				responsive: true
 			}
 		};
-}
+	}
 
 	componentDidMount(){
 		const props = this.props;
@@ -139,6 +140,10 @@ constructor() {
 				});
 			}
 		}
+	}
+
+	retrieveAuditHistory(){
+
 	}
 
 	renderCourseHistory() {
