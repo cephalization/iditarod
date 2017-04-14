@@ -79,14 +79,17 @@ class AuditList extends Component {
 	retrieveAuditHistory(){
 		if (this.state.auditInitialized) {
 			let auditList = [];
-			let maxHist = 1000;
-			let hist = 0;
-			for (let audit in this.state.audits) {
-				if (this.state.audits.hasOwnProperty(audit) && hist < maxHist) {
-					auditList.push(this.renderAudit(this.state.audits[audit]));
-					hist ++;
-				}
+			const maxHist = 1000;
+			let thisRef = this;
+			//reverse the order
+			auditList = this.state.audits.reverse();
+			//remove all but the most recent ones
+			if(auditList.length>maxHist){
+				auditList.splice(maxHist);
 			}
+			//map to their rendered states.
+			auditList=auditList.map((audit)=>(thisRef.renderAudit(audit)));
+
 			this.setState({
 				auditHistory: auditList,
 			});
@@ -184,7 +187,7 @@ class AuditList extends Component {
 		if (this.state.auditHistory) {
 			<button className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>;
 		} else {
-			<button className="btn" onClick={this.runAudit}>Run Audit</button>
+			<button className="btn" onClick={this.runAudit}>Run Audit</button>;
 		}
 
 	}
@@ -242,7 +245,7 @@ class AuditList extends Component {
 						{this.renderButton()}
 						<div className="col l6 m8 s12">
 							<h3>Completed Credits</h3>
-							<div className="information-panel panel-bl">
+							<div className="information-panel">
 								<div className="row center-align">
 									<div className={this.state.chartClass}>
 										<Doughnut data={this.state.chartData} options={this.state.chartOptions} redraw/>

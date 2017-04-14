@@ -104,14 +104,15 @@ class Dashboard extends Component {
 	retrieveAuditHistory() {
 		if (this.state.auditInitialized) {
 			let auditList = [];
-			let maxHist = 3;
-			let hist = 0;
-			for (let audit in this.state.audits) {
-				if (this.state.audits.hasOwnProperty(audit) && hist < maxHist) {
-					auditList.push(this.renderAudit(this.state.audits[audit]));
-					hist ++;
-				}
-			}
+			const maxHist = 3;
+			let thisRef = this;
+			//reverse the order
+			auditList = this.state.audits.reverse();
+			//remove all but the most recent ones
+			auditList.splice(maxHist);
+			//map to their rendered states.
+			auditList=auditList.map((audit)=>(thisRef.renderAudit(audit)));
+
 			this.setState({
 				auditHistory: auditList,
 			});
@@ -138,6 +139,7 @@ class Dashboard extends Component {
 
 	renderAuditHistory() {
 		if (this.state.auditInitialized) {
+
 			let temp = this.state.auditHistory.slice();
 			if (this.state.auditHistory) {
 				temp.push(<button key="btn" className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>);
