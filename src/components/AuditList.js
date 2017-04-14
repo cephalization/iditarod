@@ -101,9 +101,9 @@ class AuditList extends Component {
 			const exists = (
 				<div className="content-section">
 					<p>Your most recent audit</p>
-					<ul>
-						{this.state.auditHistory.length ? temp : '...' }
-					</ul>
+					<p2>
+						{this.state.auditHistory ? temp : '...' }
+					</p2>
 				</div>
 			);
 			return exists;
@@ -165,6 +165,7 @@ class AuditList extends Component {
 				let audits = response.userSpace.Audits;
 				for (let audit in audits) {
 					if (audits.hasOwnProperty(audit) && audit !== 'initialized') {
+						audits[audit].name = audit;
 						auditsList.push(audits[audit]);
 					}
 				}
@@ -240,12 +241,18 @@ class AuditList extends Component {
 								</div>
 							</div>
 						</div>
-							<div className="col l6 m8 s12">
-								<h3>Past Audits</h3>
-								<div className="information-panel panel-bl">
-									{this.renderAuditHistory()}
-								</div>
+						<div className="col l6 m8 s12">
+							<h3>Past Audits</h3>
+							<div className="information-panel panel-bl">
+								{this.renderAuditHistory()}
 							</div>
+						</div>
+						<div className="col l6 m8 s12">
+							<h3>Classes Taken</h3>
+							<div className="information-panel panel-bl">
+								<p2>{this.renderCourseHistory()}</p2>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

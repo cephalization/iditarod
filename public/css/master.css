@@ -41,6 +41,12 @@ p1 {
 	font-size: 1.5em;
 }
 
+p2 {
+	font-family: 'Roboto';
+	font-size: 1em;
+	text-align: left;
+}
+
 /*
 	Common Layouts
 */
