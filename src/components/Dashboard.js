@@ -245,17 +245,13 @@ class Dashboard extends Component {
 							</div>
 						</div>
 						<div className="col l4 m4 s12">
-							<div className="col l12 m12 s12">
-								<div className="information-panel panel-sm">
-									<h3>Courses</h3>
-									{this.renderCourseHistory()}
-								</div>
+							<div className="information-panel panel-sm">
+								<h3>Courses</h3>
+								{this.renderCourseHistory()}
 							</div>
-							<div className="col l12 m12 s12">
-								<div className="information-panel panel-sm">
-									<h3>Audits</h3>
-									{this.renderAuditHistory()}
-								</div>
+							<div className="information-panel panel-sm">
+								<h3>Audits</h3>
+								{this.renderAuditHistory()}
 							</div>
 						</div>
 					</div>
