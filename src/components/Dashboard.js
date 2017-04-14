@@ -130,6 +130,9 @@ class Dashboard extends Component {
 		let auditRequest = new Request('/run/audit', {method: 'POST', credentials: 'same-origin'});
 		fetch(auditRequest).then((response) => response.json()).then((response) => {
 			console.log('The audit is donion-rings', response);
+			if (response.Success) {
+				window.location.href=response.auditLink;
+			}
 		});
 	}
 

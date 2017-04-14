@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import * as FirebaseActions from '../firebaseFunctions';
 import cookie from 'react-cookie';
 import {Collapsible, CollapsibleItem} from 'react-materialize';
-
 class Audit extends Component {
 	constructor(props){
 		super(props);
@@ -152,6 +151,10 @@ class Audit extends Component {
 		}else if(this.state.auditLoaded){
 			return (
 				<div>
+					<div className="jet-black-bg mtu-yellow-text banner">
+						{/* The percentage and text should change dynamically. Just use credits. */}
+						<h1>You are 80% complete with <br /> your degree, awesome!</h1>
+					</div>
 					<div>
 						Audit ID: {this.props.AuditID}
 					</div>
@@ -162,8 +165,10 @@ class Audit extends Component {
 			);
 		}else{
 			return (
-				<div>
-					<h1>Loading</h1>
+				<div className="container">
+					<div className="row">
+						<h4>Generating your degree audit...</h4>
+					</div>
 				</div>
 			);
 		}

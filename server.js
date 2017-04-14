@@ -83,6 +83,7 @@ async function saveCompletedAudit (cookie, audit) {
 
 	// Add the new audit to the database
 	let userAudits = database.ref('Users/' + uid + '/Audits');
+	let dateName = '';
 	await userAudits.once('value', function(snapshot) {
 		if (!snapshot.val().initialized) {
 			database.ref('Users/' + uid + '/Audits/').set({initialized: true});
@@ -95,7 +96,7 @@ async function saveCompletedAudit (cookie, audit) {
 
 		// Cut the string short and replace spaces and : with _
 		created = created.toString().split(' ');
-		let dateName = created[1] + ' ' + created[2] + ' ' + created[3] + ' ' + created[4];
+		dateName = created[1] + ' ' + created[2] + ' ' + created[3] + ' ' + created[4];
 		dateName = dateName.replace(/:/g,'_');
 		dateName = dateName.replace(/ /g,'_');
 
@@ -104,6 +105,7 @@ async function saveCompletedAudit (cookie, audit) {
 		temp[dateName] = audit;
 		userAudits.update(temp);
 	});
+	return dateName;
 }
 
 // Request contains
@@ -144,15 +146,17 @@ async function generateAudit(request, response) {
 
 	// Run the degree audit with the newly retrieved user information
 	let audit = Audit.compareCoursesToAudit(userCourses, auditRequirements);
+	audit.takenCredits = takenCredits;
 
 	// Save a completed audit to the database
-	await saveCompletedAudit(userID, audit);
+	let auditName = await saveCompletedAudit(userID, audit);
 
 	// Tell the frontend that we are done calculating the audit
 	// We return here so that the function waits on the async functions
 	return response.send({
 		Success: true,
-		Message: 'Audit was saved successfully to the database.'
+		Message: 'Audit was saved successfully to the database.',
+		auditLink: 'audit/' + auditName
 	});
 }
 

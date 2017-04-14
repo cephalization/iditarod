@@ -45,6 +45,25 @@ p1 {
 	Common Layouts
 */
 
+.banner {
+	height: 320px;
+	padding: 20px;
+	text-align: center;
+}
+
+@media (min-width:769px) {
+	.banner h1 {
+		font-size: 600%;
+		font-weight: bold;
+	}
+}
+
+@media (max-width:768px) {
+	.banner h1 {
+		font-size: 400%;
+	}
+}
+
 .row {
 	margin-left: auto !important;
 	margin-right: auto !important;
@@ -131,6 +150,24 @@ p1 {
 /*
 	Materialize Overrides
 */
+
+nav {
+	max-width: 100vw;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+.navbar-fixed {
+	max-width: 100vw;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+.nav-wrapper {
+	max-width: 100vw;
+}
 
 /*
 	Audit css
