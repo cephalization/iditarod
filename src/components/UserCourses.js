@@ -45,8 +45,8 @@ class UserCourses extends Component {
 
 	render() {
 		return (
-      <div className="col s12 m6 l6">
-        <h5 className="s12">My Courses</h5>
+      <div className="col special-s12 s12 m6 l6">
+        <h5 className="s12 special-s12">My Courses</h5>
         <ul className="property-list collapsible" data-collapsible="accordion">
           {this.renderUserCourses()}
         </ul>
