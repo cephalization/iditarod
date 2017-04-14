@@ -85,7 +85,12 @@ export function addUserCourse(cookie, course, callback) {
 				let temp = {};
 				temp[course.slugName] = course;
 				database.ref('Users/' + uid + '/Courses/').update(temp);
-				addCredits(parseInt(course.credits, 10), uid);
+				if(typeof course.credits === 'string'){
+					let parts = course.credits.split(' ');
+					addCredits(parseFloat(parts[parts.length-1]), uid);
+				}else{
+					addCredits(parseInt(course.credits, 10), uid);
+				}
 				callback({
 					Successful: true
 				});
@@ -111,7 +116,12 @@ export function removeUserCourse(cookie, course, callback) {
 					database.ref('Users/' + uid + '/Courses/').set({initialized: false});
 					stillInitialized = false;
 				}
-				addCredits(-parseInt(course.credits, 10), uid);
+				if(typeof course.credits === 'string'){
+					let parts = course.credits.split(' ');
+					addCredits(-parseFloat(parts[parts.length-1]), uid);
+				}else{
+					addCredits(-parseInt(course.credits, 10), uid);
+				}
 				callback({
 					Successful: true,
 					stillInitialized: stillInitialized
