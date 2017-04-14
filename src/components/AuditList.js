@@ -79,7 +79,7 @@ class AuditList extends Component {
 	retrieveAuditHistory(){
 		if (this.state.auditInitialized) {
 			let auditList = [];
-			let maxHist = 5;
+			let maxHist = 1000;
 			let hist = 0;
 			for (let audit in this.state.audits) {
 				if (this.state.audits.hasOwnProperty(audit) && hist < maxHist) {
@@ -96,11 +96,12 @@ class AuditList extends Component {
 	renderAuditHistory() {
 		if (this.state.auditInitialized) {
 			let temp = this.state.auditHistory.slice();
+			let aud = this.state.audits;
 			const exists = (
 				<div className="content-section">
 					<p>Your audits</p>
 					<p1>
-						<a href='/audit/Apr_14_2017_11_21_54' >{this.state.auditHistory ? temp : '...'}</a>
+						<a href={'/audit/' + aud.slice()}>{this.state.auditHistory ? temp : '...'}</a>
 					</p1>
 				</div>
 			);
