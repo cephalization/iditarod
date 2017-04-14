@@ -75,6 +75,37 @@ async function getAuditRequirements() {
 	return requirements;
 }
 
+async function saveCompletedAudit (cookie, audit) {
+	// Authenticate to the user's data on firebase
+	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
+	let user = await Firebase.auth().signInWithCredential(cred);
+	const uid = user.uid;
+
+	// Add the new audit to the database
+	let userAudits = database.ref('Users/' + uid + '/Audits');
+	await userAudits.once('value', function(snapshot) {
+		if (!snapshot.val().initialized) {
+			database.ref('Users/' + uid + '/Audits/').set({initialized: true});
+		}
+
+		// Get the datetime in string form
+		let created = new Date();
+		created = created.getTime();
+		created = new Date(created);
+
+		// Cut the string short and replace spaces and : with _
+		created = created.toString().split(' ');
+		let dateName = created[1] + ' ' + created[2] + ' ' + created[3] + ' ' + created[4];
+		dateName = dateName.replace(/:/g,'_');
+		dateName = dateName.replace(/ /g,'_');
+
+		// Create a new object with this name
+		let temp = {};
+		temp[dateName] = audit;
+		userAudits.update(temp);
+	});
+}
+
 // Request contains
 // cookie that has a token to perform firebase requests
 async function generateAudit(request, response) {
@@ -112,10 +143,17 @@ async function generateAudit(request, response) {
 	let auditRequirements = await getAuditRequirements();
 
 	// Run the degree audit with the newly retrieved user information
-
-	console.log(Audit.compareCoursesToAudit(userCourses, auditRequirements));
+	let audit = Audit.compareCoursesToAudit(userCourses, auditRequirements);
 
 	// Save a completed audit to the database
+	await saveCompletedAudit(userID, audit);
+
+	// Tell the frontend that we are done calculating the audit
+	// We return here so that the function waits on the async functions
+	return response.send({
+		Success: true,
+		Message: 'Audit was saved successfully to the database.'
+	});
 }
 
 app.listen(9000);

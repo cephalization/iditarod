@@ -70,7 +70,7 @@ function compareCoursesToAudit(courses, audit)
 		}
 	}
 	return ret;
-};
+}
 
 /* Function(s) for comparing user's courses with degree requirements */
 
@@ -134,7 +134,7 @@ function checkOr(courses, or_obj){
 			break;
 		default:
 			// This should never be reached
-			console.log("Problem in OR requirement with requirement", or_course);
+			console.log('Problem in OR requirement with requirement', or_course);
 		}
 	}
 	return ret;
@@ -179,14 +179,14 @@ function checkAnd(courses, and_obj){
 			break;
 		case /[A-Z][A-Z]+_[0-9]{4}/.test(and_course):
 			if (checkExactCourse(courses, and_course)) {
-					ret.completedItems[and_course] = and_obj[and_course];
+				ret.completedItems[and_course] = and_obj[and_course];
 			} else {
 				ret.completed = false;
 			}
 			break;
 		default:
 			// This shouldn't ever be reached
-			console.log("Something went wrong in an AND with requirement", and_obj);
+			console.log('Something went wrong in an AND with requirement', and_obj);
 		}
 	}
 	return ret;
