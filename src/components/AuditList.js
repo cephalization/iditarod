@@ -100,7 +100,7 @@ class AuditList extends Component {
 			}*/
 			const exists = (
 				<div className="content-section">
-					<p>Your most recent audit</p>
+					<p>Your audits</p>
 					<p2>
 						{this.state.auditHistory ? temp : '...' }
 					</p2>

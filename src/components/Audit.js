@@ -153,7 +153,15 @@ class Audit extends Component {
 				<div>
 					<div className="jet-black-bg mtu-yellow-text banner">
 						{/* The percentage and text should change dynamically. Just use credits. */}
-						<h1>You are 80% complete with <br /> your degree, awesome!</h1>
+						<h1>You are {Math.round((this.state.audit.takenCredits / this.state.audit.neededCredits)*100)}% complete with <br /> your degree, awesome!</h1>
+						<div className="container row mtu-yellow-text">
+							<div className="col m6 l6 s12">
+								<h2><i className="material-icons large">done_all</i> You have taken {this.state.audit.takenCourses} classes!</h2>
+							</div>
+							<div className="col m6 l6 s12">
+								<h2><i className="material-icons large">trending_up</i> You have completed {Object.keys(this.state.audit.completed).length} requirements!</h2>
+							</div>
+						</div>
 					</div>
 					<div>
 						Audit ID: {this.props.AuditID}
