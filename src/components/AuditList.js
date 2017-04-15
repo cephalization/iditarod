@@ -61,7 +61,7 @@ class AuditList extends Component {
 
 	renderAudit(audit) {
 		const auditInfo = (
-			<li key={audit.name}>{audit.name}</li>
+			<li key={audit.name}><a href={'/audit/' + audit.name}>{audit.name}</a></li>
 		);
 		return auditInfo;
 	}
@@ -99,13 +99,12 @@ class AuditList extends Component {
 	renderAuditHistory() {
 		if (this.state.auditInitialized) {
 			let temp = this.state.auditHistory.slice();
-			let aud = this.state.audits;
 			const exists = (
 				<div className="content-section">
 					<p>Your audits</p>
-					<p1>
-						<a href={'/audit/' + aud.slice()}>{this.state.auditHistory ? temp : '...'}</a>
-					</p1>
+					<ul>
+						{this.state.auditHistory ? temp : '...'}
+					</ul>
 				</div>
 			);
 			return exists;
