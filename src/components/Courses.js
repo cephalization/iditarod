@@ -112,7 +112,7 @@ class Course extends Component {
 			);
 		}
 		const courseItem = (
-			<li key={keyName} className="information-panel panel-sm">
+			<li key={keyName} className="course-panel-body panel-sm">
 				<div className="collapsible-header">
 					{course.prettyClassNum}
 					<br />

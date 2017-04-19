@@ -146,7 +146,7 @@ class Dashboard extends Component {
 			}
 			const exists = (
 				<div className="content-section">
-					<p>Your most recent audit</p>
+					<p>Your most recent audits</p>
 					<ul>
 						{this.state.auditHistory.length ? temp : '...' }
 					</ul>
@@ -192,7 +192,7 @@ class Dashboard extends Component {
 		if (this.state.courseInitialized) {
 			const exists = (
 				<div className="content-section">
-					<p>Your most recent courses</p>
+					<p>Here's some courses you've taken</p>
 					<ul>
 						{this.state.courseHistory.length ? this.state.courseHistory : '...' }
 					</ul>
@@ -239,6 +239,7 @@ class Dashboard extends Component {
 						<div className="col l8 m8 s12">
 							<div className="information-panel">
 								<h2>Overall Degree Completion</h2>
+								<h4>(by credits)</h4>
 								<div className="row center-align">
 									<div className={/*'col l6 offset-l3 m10 offset-m1 ' +*/ this.state.chartClass}>
 										<Pie data={this.state.chartData} options={this.state.chartOptions} redraw/>

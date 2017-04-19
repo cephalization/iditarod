@@ -36,6 +36,10 @@ h2 {
 	font-family: 'Roboto';
 }
 
+a {
+	font-family: 'Lato', sans-serif;
+}
+
 p1 {
 	font-family: 'Roboto';
 	font-size: 1.5em;
@@ -76,6 +80,10 @@ p2 {
 	margin-right: auto !important;
 }
 
+.clickable {
+	cursor: pointer;
+}
+
 .strip-padding {
 	padding: 0;
 }
@@ -92,6 +100,14 @@ p2 {
 .center-object {
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.audit-item {
+	margin-bottom: 5px;
+}
+
+#selectedAudit {
+	background-color: #8C8C8C;
 }
 
 .information-panel {
@@ -117,13 +133,22 @@ p2 {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+	background-color: #DCDCDC;
 }
 
 .panel-bl {
-	overflow: scroll;
+	overflow: auto;
 	min-height: 330px;
 	max-height: 330px;
 	text-align: center;
+}
+
+.panel-full {
+	overflow: auto;
+	max-height: calc(100vh - 90px);
+	text-align: center;
+	margin-bottom: 0;
+	margin-top: 5px;
 }
 
 .panel-lg {

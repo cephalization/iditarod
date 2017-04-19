@@ -148,8 +148,8 @@ async function generateAudit(request, response) {
 	let audit = Audit.compareCoursesToAudit(userCourses, auditRequirements);
 	audit.takenCredits = takenCredits;
 	audit.neededCredits = auditRequirements.credits_min;
-	audit.takenCourses = userCourses.length;
-	
+	audit.takenCourses = userCourses;
+
 
 	// Save a completed audit to the database
 	let auditName = await saveCompletedAudit(userID, audit);
@@ -159,7 +159,7 @@ async function generateAudit(request, response) {
 	return response.send({
 		Success: true,
 		Message: 'Audit was saved successfully to the database.',
-		auditLink: 'audit/' + auditName
+		auditLink: '/audit/' + auditName
 	});
 }
 

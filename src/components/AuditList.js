@@ -17,6 +17,8 @@ class AuditList extends Component {
 		this.renderAuditHistory = this.renderAuditHistory.bind(this);
 		this.renderAudit = this.renderAudit.bind(this);
 		this.renderButton = this.renderButton.bind(this);
+		this.runAudit = this.runAudit.bind(this);
+		this.renderPreview = this.renderPreview.bind(this);
 
 		this.state = {
 			courseHistory: [],
@@ -25,6 +27,7 @@ class AuditList extends Component {
 			auditHistory: [],
 			audits: [],
 			auditInitialized: true,
+			currentAudit: {},
 			chartClass: 'hide',
 			chartData:{
 				labels:[
@@ -56,43 +59,71 @@ class AuditList extends Component {
 		const props = this.props;
 		props.checkAuth('AuditList');
 		this.retrieveUserSpace();
-		this.updatePieChart();
 	}
 
-	renderAudit(audit) {
+	renderAudit(audit, selectedAudit) {
+		if (selectedAudit == null) {
+			selectedAudit = {};
+		}
 		const auditInfo = (
-			<li key={audit.name}><a href={'/audit/' + audit.name}>{audit.name}</a></li>
+			<li key={audit.name}>
+				<div className="audit-item row" id={
+						selectedAudit.name == audit.name ? 'selectedAudit' : 'nonSelectedAudit'
+					}>
+					<button className="btn btn-flat col s12 m4 l4" onClick={() => {window.location.href = '/audit/' + audit.name;}}>Open Full Audit</button>
+					<h5 onClick={() => this.renderPreview(audit)} className="clickable col s12 m8 l8"> {audit.name}</h5>
+					<hr/>
+				</div>
+			</li>
 		);
 		return auditInfo;
+	}
+
+	renderPreview(audit) {
+		this.retrieveAuditHistory(audit);
 	}
 
 	runAudit() {
 		let auditRequest = new Request('/run/audit', {method: 'POST', credentials: 'same-origin'});
 		fetch(auditRequest).then((response) => response.json()).then((response) => {
-			console.log('The audit is donion-rings', response);
 			if (response.Success) {
-				window.location.href=response.auditLink;
+				window.location.href = response.auditLink;
 			}
 		});
 	}
 
-	retrieveAuditHistory(){
+	retrieveAuditHistory(selectedAudit){
 		if (this.state.auditInitialized) {
 			let auditList = [];
 			const maxHist = 1000;
 			let thisRef = this;
-			//reverse the order
-			auditList = this.state.audits.reverse();
-			//remove all but the most recent ones
-			if(auditList.length>maxHist){
-				auditList.splice(maxHist);
+
+			//take the info off of the top or selected audit
+			let top = {};
+			if (selectedAudit != null) {
+				auditList = this.state.audits;
+				top = selectedAudit;
+			} else {
+				//reverse the order
+				auditList = this.state.audits.reverse();
+				//remove all but the most recent ones
+				if(auditList.length>maxHist){
+					auditList.splice(maxHist);
+				}
+				top = auditList[0];
 			}
+
 			//map to their rendered states.
-			auditList=auditList.map((audit)=>(thisRef.renderAudit(audit)));
+			auditList=auditList.map((audit)=>(thisRef.renderAudit(audit, top)));
 
 			this.setState({
 				auditHistory: auditList,
+				currentAudit: top,
+				courses: top.takenCourses
 			});
+
+			this.updatePieChart(top.takenCredits, top.neededCredits);
+			this.retrieveCourseHistory(top.takenCourses);
 		}
 	}
 
@@ -101,7 +132,6 @@ class AuditList extends Component {
 			let temp = this.state.auditHistory.slice();
 			const exists = (
 				<div className="content-section">
-					<p>Your audits</p>
 					<ul>
 						{this.state.auditHistory ? temp : '...'}
 					</ul>
@@ -119,24 +149,19 @@ class AuditList extends Component {
 		}
 	}
 
-	updatePieChart(){
+	updatePieChart(takenCred, neededCred){
 		let oldChartData = this.state.chartData;
-		let dashboardRef = this;
-		FirebaseActions.getCreditsTaken(cookie.load('TOKEN'), function(credsTaken){
-			FirebaseActions.getTotalCredits(function(credsTotal){
-				let credsRemaining = credsTotal - credsTaken;
-				oldChartData.datasets[0].data[0] = credsTaken;
-				if(credsRemaining<0){
-					oldChartData.datasets[0].data[1] = 0;
-				}else{
-					oldChartData.datasets[0].data[1] = credsRemaining;
-				}
-				dashboardRef.setState({
-					chartClass: '',
-					chartData: oldChartData
-				});
-
-			});
+		let outerRef = this;
+		let credsRemaining = neededCred - takenCred;
+		oldChartData.datasets[0].data[0] = takenCred;
+		if(credsRemaining<0){
+			oldChartData.datasets[0].data[1] = 0;
+		}else{
+			oldChartData.datasets[0].data[1] = credsRemaining;
+		}
+		outerRef.setState({
+			chartClass: '',
+			chartData: oldChartData
 		});
 	}
 
@@ -144,23 +169,8 @@ class AuditList extends Component {
 		let outerThis = this;
 		FirebaseActions.userSpace(cookie.load('TOKEN'), function(response){
 			let userSpace = response.userSpace;
-			if (userSpace.Courses.initialized) {
-				let courseList = [];
-				let courses = response.userSpace.Courses;
-				for (let course in courses) {
-					if (courses.hasOwnProperty(course) && course !== 'initialized') {
-						courseList.push(courses[course]);
-					}
-				}
-				outerThis.setState({
-					courses: courseList,
-				});
-				outerThis.retrieveCourseHistory();
-			} else {
-				outerThis.setState({
-					courseInitialized: userSpace.Courses.initialized
-				});
-			}
+
+			// Retrieve the last audit ran
 			if (userSpace.Audits.initialized) {
 				let auditsList = [];
 				let audits = response.userSpace.Audits;
@@ -176,19 +186,17 @@ class AuditList extends Component {
 				outerThis.retrieveAuditHistory();
 			} else {
 				outerThis.setState({
-					auditInitialized: response.userSpace.Audits.initialized
+					auditInitialized: response.userSpace.Audits.initialized,
+					courseInitialized: false
 				});
 			}
 		});
 	}
 
 	renderButton() {
-		if (this.state.auditHistory) {
-			<button className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>;
-		} else {
-			<button className="btn" onClick={this.runAudit}>Run Audit</button>;
+		if (this.state.auditHistory.length) {
+			return <button className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>;
 		}
-
 	}
 
 	renderCourse(course) {
@@ -198,20 +206,24 @@ class AuditList extends Component {
 		return courseInfo;
 	}
 
-	retrieveCourseHistory() {
-		if (this.state.courseInitialized) {
+	retrieveCourseHistory(courses) {
+		if (courses.length) {
 			let courseList = [];
 			let maxHist = 100;
 			let hist = 0;
-			for (let course in this.state.courses) {
-				if (this.state.courses.hasOwnProperty(course) && hist < maxHist) {
-					courseList.push(this.renderCourse(this.state.courses[course]));
+			for (let course in courses) {
+				if (courses.hasOwnProperty(course) && hist < maxHist) {
+					courseList.push(this.renderCourse(courses[course]));
 					hist ++;
 				}
-				this.setState({
-					courseHistory: courseList,
-				});
 			}
+			this.setState({
+				courseHistory: courseList,
+			});
+		} else {
+			this.setState({
+				courseInitialized: false
+			});
 		}
 	}
 
@@ -219,17 +231,16 @@ class AuditList extends Component {
 		if (this.state.courseInitialized) {
 			const exists = (
 				<div className="content-section">
-					<p1>
+					<ul>
 						{this.state.courseHistory.length ? this.state.courseHistory : '...' }
-					</p1>
+					</ul>
 				</div>
 			);
 			return exists;
 		} else {
 			const notExists = (
 				<div className="content-section">
-					<p>You have not taken any courses yet!</p>
-					<a className="btn" href="/courses">Add Courses</a>
+					<p>You had not taken any courses on when this audit was generated!</p>
 				</div>
 			);
 			return notExists;
@@ -241,27 +252,25 @@ class AuditList extends Component {
 			<div>
 				<div>
 					<div className="row center-align">
-						{this.renderButton()}
 						<div className="col l6 m8 s12">
-							<h3>Completed Credits</h3>
-							<div className="information-panel">
+							<div className="information-panel panel-full">
+								<h3>Past Audits</h3>
+								{this.renderButton()}
+								{this.renderAuditHistory()}
+							</div>
+						</div>
+						<div className="col l6 m8 s12">
+							<div className="information-panel panel-full">
+								<h3>Completed Credits</h3>
 								<div className="row center-align">
 									<div className={this.state.chartClass}>
 										<Doughnut data={this.state.chartData} options={this.state.chartOptions} redraw/>
 									</div>
 								</div>
-							</div>
-						</div>
-						<div className="col l6 m8 s12">
-							<h3>Past Audits</h3>
-							<div className="information-panel panel-bl">
-								{this.renderAuditHistory()}
-							</div>
-						</div>
-						<div className="col l6 m8 s12">
-							<h3>Classes Taken</h3>
-							<div className="information-panel panel-bl">
-								<p2>{this.renderCourseHistory()}</p2>
+								<h3>Classes Taken</h3>
+								<div className="row center-align">
+									<p2>{this.renderCourseHistory()}</p2>
+								</div>
 							</div>
 						</div>
 					</div>

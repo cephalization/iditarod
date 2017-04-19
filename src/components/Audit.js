@@ -30,11 +30,15 @@ class Audit extends Component {
 		let uncompleted = [];
 
 		for(let key in audit.completed){
-			completed.push(key);
+			if(audit.completed.hasOwnProperty(key)) {
+				completed.push(key);
+			}
 		}
 
 		for(let key in audit.uncompleted){
-			uncompleted.push(key);
+			if(audit.uncompleted.hasOwnProperty(key)) {
+				uncompleted.push(key);
+			}
 		}
 		//Function recursively expands the audit object,
 		let expand = function(prefix, object, level){
@@ -156,7 +160,7 @@ class Audit extends Component {
 						<h1>You are {Math.round((this.state.audit.takenCredits / this.state.audit.neededCredits)*100)}% complete with <br /> your degree, awesome!</h1>
 						<div className="container row mtu-yellow-text">
 							<div className="col m6 l6 s12">
-								<h2><i className="material-icons large">done_all</i> You have taken {this.state.audit.takenCourses} classes!</h2>
+								<h2><i className="material-icons large">done_all</i> You have taken {this.state.audit.takenCourses.length} classes!</h2>
 							</div>
 							<div className="col m6 l6 s12">
 								<h2><i className="material-icons large">trending_up</i> You have completed {Object.keys(this.state.audit.completed).length} requirements!</h2>
@@ -164,7 +168,6 @@ class Audit extends Component {
 						</div>
 					</div>
 					<div>
-						Audit ID: {this.props.AuditID}
 					</div>
 					<div>
 						{this.getAuditRender(this.state.audit)}
