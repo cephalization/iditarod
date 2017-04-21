@@ -167,7 +167,7 @@ class AuditList extends Component {
 	* Retrieve all user information stored on the database for the current user
 	* 	This information is then processed and relevant information is applied to state
 	*/
-	retriveUserSpace() {
+	retrieveUserSpace() {
 		let outerThis = this;
 		FirebaseActions.userSpace(cookie.load('TOKEN'), function(response){
 			let userSpace = response.userSpace;
