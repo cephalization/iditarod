@@ -18,10 +18,12 @@ const database = Firebase.database();
 
 // Configure express to serve files from the build folder
 app.use(express.static('./build'));
+//Add some middleware for post requests.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
+//Add cookie capability
 app.use(cookieParser());
 
 // Intercept all URLs, switch on URL
@@ -50,7 +52,12 @@ app.post('*', function(req, res){
 		break;
 	}
 });
-
+/*
+ * Gets all data under the users ID in the database.
+ *
+ * @param cookie The userID token used for authentication.
+ * @return a javascript object containg all data under the users ID in the database.
+ */
 async function getUserSpace(cookie) {
 	// Authenticate to the user's data on firebase
 	let us = {};
@@ -65,7 +72,11 @@ async function getUserSpace(cookie) {
 	});
 	return us;
 }
-
+/*
+ * Fetches the requirments for the audit
+ *
+ * @return a javascript object that contains the degree requirments.
+ */
 async function getAuditRequirements() {
 	let audits = database.ref('Audits/');
 	let requirements = {};
@@ -74,7 +85,13 @@ async function getAuditRequirements() {
 	});
 	return requirements;
 }
-
+/*
+ * Saves the audit for the user associated with the cookie.
+ *
+ * @param cookie the students Google auth ID
+ * @param audit the completed audit to save
+ * @return the id of the audit.
+ */
 async function saveCompletedAudit (cookie, audit) {
 	// Authenticate to the user's data on firebase
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
@@ -110,6 +127,13 @@ async function saveCompletedAudit (cookie, audit) {
 
 // Request contains
 // cookie that has a token to perform firebase requests
+/*
+ * generates the audit for the given the POST request variable
+ *
+ * @param request the post request variable from the express router. There must be a token cookie.
+ * @param response the variable for making responses from the express router.
+ * @return void
+ */
 async function generateAudit(request, response) {
 
 	// Loading relevant user information from firebase

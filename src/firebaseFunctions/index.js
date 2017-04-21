@@ -1,23 +1,32 @@
 import Firebase from 'firebase';
-
+//firebase credentials.
 const config = {
 	apiKey: 'AIzaSyBbayVYRadLrnczNqIzhwd1X-LwEO7OwxQ',
 	authDomain: 'iditarod-b06d6.firebaseapp.com',
 	databaseURL: 'https://iditarod-b06d6.firebaseio.com',
 };
-
+//Initialize firebase
 Firebase.initializeApp(config);
 const database = Firebase.database();
 
-//Utility Functions
+/*
+ * Signs the user into our Firebase database.
+ *
+ * @param googleToken the google ID token for the user to sign in.
+ * @return the user info for the current user.
+ * See https://firebase.google.com/docs/reference/js/firebase.User for more details on this user object.
+ */
 export function signInUser(googleToken){
 	let cred = Firebase.auth.GoogleAuthProvider.credential(googleToken);
 	let user = Firebase.auth().signInWithCredential(cred);
 	//Check if this is the first sign in (if this user directory exists)
 	database.ref('Users').once('value', function(snapshot){
+		//Get the user UID.
 		let curUser = Firebase.auth().currentUser.uid;
 		console.log('checked if user ' + curUser + ' existed.');
+		//Check if the the UID exists in the database
 		if(!snapshot.hasChild(curUser)){
+			//If it doesn't, then initialize it.
 			database.ref('Users/' + curUser).set({'Audits':{initialized:false},
 				'Courses':{initialized:false}});
 			console.log('User doesn\'t exist, adding.');
@@ -26,21 +35,38 @@ export function signInUser(googleToken){
 
 	return user;
 }
-
+/*
+ * Gets the current user.
+ */
 export function getCurrentUser(){
 	return Firebase.auth().currentUser;
 }
-
+/*
+ * Checks if the particular user is signed in.
+ *
+ * @param user object of type firebase.User. See https://firebase.google.com/docs/reference/js/firebase.User for more info.
+ * @return true if user is signed in, false if this user isn't signed in.
+ */
 export function isSignedIn(user){
 	return user != null && Firebase.auth().currentUser === user;
 }
-
+/*
+ * Signs out the currently signed in user.
+ *
+ * @return a promise containing void.
+ */
 export function signOut(){
 	return Firebase.auth().signOut;
 }
+
 //Database Functions
-//gets allcourses, calls callback with an object, with one property "courses",
-//Which contains all courses.
+
+/* gets allcourses, calls callback with an object, with one property "courses",
+ * Which contains all courses.
+ *
+ * @param callback a function with a parameter for a javascript object
+ * @return void, callback is called with an object that contains all courses.
+ */
 export function allCourses(callback){
 	let courses = database.ref('Courses');
 	courses.once('value', function (snapshot) {
@@ -49,7 +75,13 @@ export function allCourses(callback){
 		});
 	});
 }
-
+/*
+ * Gets all data under the users ID in the database.
+ *
+ * @param cookie The userID token used for authentication.
+ * @param callback a function with a parameter for a javascript object
+ * @return void, calls callback with a javascript object containg all data under the users ID in the database.
+ */
 export function userSpace(cookie, callback){
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {
@@ -62,7 +94,14 @@ export function userSpace(cookie, callback){
 		});
 	});
 }
-
+/*
+ * Gets a particular user audit.
+ *
+ * @param cookie The userID token used for authentication.
+ * @param auditid the ID of the audit, which is a date-time string of when the audit was created.
+ * @param callback a function with a parameter for a javascript object
+ * @return void, calls callback with a javascript object containing the audit.
+ */
 export function getAudit(cookie, auditid, callback){
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {
@@ -71,20 +110,32 @@ export function getAudit(cookie, auditid, callback){
 		});
 	});
 }
-
+/*
+ * Adds the given course to the current user.
+ * @param cookie The userID token used for authentication.
+ * @param course the course object to add.
+ * @param callback a function with a parameter for a javascript object
+ * @return void, calls callback with a javascript object containing whether the add was Successful or not.
+ */
 export function addUserCourse(cookie, course, callback) {
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {
+		//get user id.
 		let uid = user.uid;
 		console.log('Users/' + uid + '/Courses/');
+		//Get the user courses.
 		database.ref('Users/' + uid + '/Courses').once('value', function(snapshot){
+			//Initialize courses if not initialized.
 			if (!snapshot.val().initialized) {
 				database.ref('Users/' + uid + '/Courses/').set({initialized: true});
 			}
+			//if the course doesn't exist...
 			if (!snapshot.hasChild(course.slugName)) {
 				let temp = {};
 				temp[course.slugName] = course;
+				//Upload the coarse.
 				database.ref('Users/' + uid + '/Courses/').update(temp);
+				//Add the credits (max number if it's variable, the first case).
 				if(typeof course.credits === 'string'){
 					let parts = course.credits.split(' ');
 					addCredits(parseFloat(parts[parts.length-1]), uid);
@@ -102,7 +153,14 @@ export function addUserCourse(cookie, course, callback) {
 		});
 	});
 }
-
+/*
+ * Removes the given course to the current user.
+ * @param cookie The userID token used for authentication.
+ * @param course the course object to remove.
+ * @param callback a function with a parameter for a javascript object
+ * @return void, calls callback with a javascript object containing whether the
+ * removal was Successful or not, as well as whether all courses are removed or not (stillInitialized).
+ */
 export function removeUserCourse(cookie, course, callback) {
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {
@@ -118,6 +176,7 @@ export function removeUserCourse(cookie, course, callback) {
 				}
 				if(typeof course.credits === 'string'){
 					let parts = course.credits.split(' ');
+					//Note the - sign, adds negative credits, which removes credits.
 					addCredits(-parseFloat(parts[parts.length-1]), uid);
 				}else{
 					addCredits(-parseInt(course.credits, 10), uid);
@@ -134,7 +193,12 @@ export function removeUserCourse(cookie, course, callback) {
 		});
 	});
 }
-
+/*
+ * Adds the given course to the current user.
+ * @param cookie The userID token used for authentication.
+ * @param callback a function with a parameter for the number of credits
+ * @return void, calls callback with a number indicating how many credits the current user has taken.
+ */
 export function getCreditsTaken(cookie, callback){
 	let cred = Firebase.auth.GoogleAuthProvider.credential(cookie);
 	Firebase.auth().signInWithCredential(cred).then(function(user) {
@@ -144,13 +208,24 @@ export function getCreditsTaken(cookie, callback){
 		});
 	});
 }
-
+/*
+ * Gets the total number of credits needed to complete an audit
+ *
+ * @param callback a function with a parameter for the number of credits
+ * @return void, calls callback with a number indicating how many credits the audit needs to be completed.
+ */
 export function getTotalCredits(callback){
 	database.ref('Audits/CompSci-CompSci/credits_min').once('value', function(datasnapshot){
 		callback(datasnapshot.val());
 	});
 }
-
+/*
+ * Adds the given amount of credits to the users total credits taken.
+ *
+ * @param val the amount of credits to add.
+ * @param uid the uid of the user to add the credits to.
+ * @return void
+ */
 function addCredits(val, uid){
 	database.ref('Users/' + uid).once('value', function(snapshot){
 		let numCreds = 0;
