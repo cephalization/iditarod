@@ -61,6 +61,7 @@ class Course extends Component {
 		});
 	}
 
+	// Apply a rendered list of user courses (from firebase) to the state
 	retrieveUserCourses() {
 		// Make modifications to an object referring the class's 'this'
 		let coursesRef = this;
@@ -96,6 +97,7 @@ class Course extends Component {
 		});
 	}
 
+	// Return JSX for a collapsible pane containing course information
 	renderCourse(course, keyName, taken) {
 		let courseActions;
 		if (taken) {
@@ -131,6 +133,7 @@ class Course extends Component {
 		return courseItem;
 	}
 
+	// Add a course to a user's list of courses, then remove it from the local list of all courses
 	addUserCourse(course) {
 		let google = cookie.load('TOKEN');
 		let coursesRef = this;
@@ -158,6 +161,7 @@ class Course extends Component {
 		});
 	}
 
+	// Remove a course from a user's list of courses, add it to the local list of all courses
 	removeUserCourse(course) {
 		let google = cookie.load('TOKEN');
 		let coursesRef = this;
@@ -209,6 +213,7 @@ class Course extends Component {
 		});
 	}
 
+	// Retrieve all MTU courses from firebase
 	retrieveCourses() {
 		// Make modifications to an object referring the class's 'this'
 		let coursesRef = this;

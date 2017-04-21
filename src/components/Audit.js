@@ -6,15 +6,21 @@ class Audit extends Component {
 	constructor(props){
 		super(props);
 
+		// Bind functions that need 'this'
 		this.getAuditRender = this.getAuditRender.bind(this);
 		this.loadAudit = this.loadAudit.bind(this);
 
+		// Initialize our state
 		this.state={
 			audit:{},
 			auditLoaded:false
 		};
 	}
 
+	/*
+	* Load the audit being requested via props
+	*		This function modifies the state with the audit upon success
+	*/
 	loadAudit(){
 		let thisRef = this;
 		FirebaseActions.getAudit(cookie.load('TOKEN'), this.props.AuditID, function(audit){
@@ -25,6 +31,9 @@ class Audit extends Component {
 		});
 	}
 
+	/*
+	*	Parse the completed audit and render its results
+	*/
 	getAuditRender(audit){
 		let completed = [];
 		let uncompleted = [];
@@ -138,6 +147,7 @@ class Audit extends Component {
 		);
 	}
 
+	// On mount of the component, load the audit and check authentication
 	componentDidMount(){
 		const props = this.props;
 		//if we're not signed in, then we need to re-auth, or redirect to the login page.
@@ -145,6 +155,7 @@ class Audit extends Component {
 		this.loadAudit();
 	}
 
+	// Render all JSX
 	render() {
 		if(this.state.audit === null){
 			return (

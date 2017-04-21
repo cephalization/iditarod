@@ -8,6 +8,7 @@ class AuditList extends Component {
 	constructor() {
 		super();
 
+		// Bind functions that need 'this'
 		this.updatePieChart = this.updatePieChart.bind(this);
 		this.retrieveUserSpace = this.retrieveUserSpace.bind(this);
 		this.renderCourse = this.renderCourse.bind(this);
@@ -20,6 +21,7 @@ class AuditList extends Component {
 		this.runAudit = this.runAudit.bind(this);
 		this.renderPreview = this.renderPreview.bind(this);
 
+		// Initialize our state
 		this.state = {
 			courseHistory: [],
 			courses: [],
@@ -55,12 +57,16 @@ class AuditList extends Component {
 		};
 	}
 
+	// On mount of the component, load the audit and check authentication
 	componentDidMount(){
 		const props = this.props;
 		props.checkAuth('AuditList');
 		this.retrieveUserSpace();
 	}
 
+	/*
+	* Return a JSX representation of an audit to be selected in the list
+	*/
 	renderAudit(audit, selectedAudit) {
 		if (selectedAudit == null) {
 			selectedAudit = {};
@@ -79,10 +85,12 @@ class AuditList extends Component {
 		return auditInfo;
 	}
 
+	// This function refreshes all state related to the Audit preview
 	renderPreview(audit) {
 		this.retrieveAuditHistory(audit);
 	}
 
+	// This function requests a new audit, if successful routes to the new audit
 	runAudit() {
 		let auditRequest = new Request('/run/audit', {method: 'POST', credentials: 'same-origin'});
 		fetch(auditRequest).then((response) => response.json()).then((response) => {
@@ -92,6 +100,11 @@ class AuditList extends Component {
 		});
 	}
 
+	/*
+	*	This function will parse, organize, and convert audits
+	*		If no parameters are present, parse all audits, add their rendered states to the state
+	*		If a single audit is passed in, only re-render that audit, adding new CSS in the process
+	*/
 	retrieveAuditHistory(selectedAudit){
 		if (this.state.auditInitialized) {
 			let auditList = [];
@@ -127,6 +140,7 @@ class AuditList extends Component {
 		}
 	}
 
+	// Render the list of audits if they exists, otherwise render the option to run one
 	renderAuditHistory() {
 		if (this.state.auditInitialized) {
 			let temp = this.state.auditHistory.slice();
@@ -149,23 +163,11 @@ class AuditList extends Component {
 		}
 	}
 
-	updatePieChart(takenCred, neededCred){
-		let oldChartData = this.state.chartData;
-		let outerRef = this;
-		let credsRemaining = neededCred - takenCred;
-		oldChartData.datasets[0].data[0] = takenCred;
-		if(credsRemaining<0){
-			oldChartData.datasets[0].data[1] = 0;
-		}else{
-			oldChartData.datasets[0].data[1] = credsRemaining;
-		}
-		outerRef.setState({
-			chartClass: '',
-			chartData: oldChartData
-		});
-	}
-
-	retrieveUserSpace() {
+	/*
+	* Retrieve all user information stored on the database for the current user
+	* 	This information is then processed and relevant information is applied to state
+	*/
+	retriveUserSpace() {
 		let outerThis = this;
 		FirebaseActions.userSpace(cookie.load('TOKEN'), function(response){
 			let userSpace = response.userSpace;
@@ -193,12 +195,18 @@ class AuditList extends Component {
 		});
 	}
 
+	/*
+	* Simply return JSX for a run audit button, this is called if audits exist already
+	*/
 	renderButton() {
 		if (this.state.auditHistory.length) {
 			return <button className="btn" onClick={this.runAudit} style={{marginTop:'15px'}}>Run Another Audit</button>;
 		}
 	}
 
+	/*
+	*	Simply return JSX for a given course
+	*/
 	renderCourse(course) {
 		const courseInfo = (
 			<li key={course.slugName}>{course.name}</li>
@@ -206,6 +214,9 @@ class AuditList extends Component {
 		return courseInfo;
 	}
 
+	/*
+	* Parse a list of courses, convert them to their rendered JSX states, apply them to state
+	*/
 	retrieveCourseHistory(courses) {
 		if (courses.length) {
 			let courseList = [];
@@ -227,6 +238,7 @@ class AuditList extends Component {
 		}
 	}
 
+	// Return JSX for the list of rendered courses, if they exist
 	renderCourseHistory() {
 		if (this.state.courseInitialized) {
 			const exists = (
@@ -240,11 +252,28 @@ class AuditList extends Component {
 		} else {
 			const notExists = (
 				<div className="content-section">
-					<p>You had not taken any courses on when this audit was generated!</p>
+					<p>You had not taken any courses when this audit was generated!</p>
 				</div>
 			);
 			return notExists;
 		}
+	}
+
+	// Update the values of the pie chart
+	updatePieChart(takenCred, neededCred){
+		let oldChartData = this.state.chartData;
+		let outerRef = this;
+		let credsRemaining = neededCred - takenCred;
+		oldChartData.datasets[0].data[0] = takenCred;
+		if(credsRemaining<0){
+			oldChartData.datasets[0].data[1] = 0;
+		}else{
+			oldChartData.datasets[0].data[1] = credsRemaining;
+		}
+		outerRef.setState({
+			chartClass: '',
+			chartData: oldChartData
+		});
 	}
 
 	render() {
